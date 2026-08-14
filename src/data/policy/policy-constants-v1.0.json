@@ -1,0 +1,23 @@
+{
+  "contractVersion": "1.0.0",
+  "verifiedAt": "2026-08-07",
+  "sai2026_27": {
+    "saiFloor": -1500,
+    "saiCeiling": 999999,
+    "studentIncomeProtectionAllowance": 11770,
+    "studentIncomeAssessmentRate": 0.5,
+    "studentAssetConversionRate": 0.2,
+    "parentAssetConversionRate": 0.12,
+    "parentAssetProtectionAllowance": 0,
+    "parentIncomeProtectionAllowance": {"2":29190,"3":36330,"4":44880,"5":52950,"6":61930,"eachAdditionalAbove6":6990}
+  },
+  "pell2026_27": {
+    "maxScheduledAward": 7395,
+    "minScheduledAward": 740,
+    "saiIneligibilityThreshold": 14790,
+    "povertyGuidelineVintage": 2024
+  },
+  "rap": {"minimumMonthlyPayment":10,"dependentMonthlyReduction":50,"forgivenessQualifyingPayments":360},
+  "ibr": {"povertyMultiplier":1.5,"newBorrowerRate":0.1,"oldBorrowerRate":0.15,"newBorrowerForgivenessPayments":240,"oldBorrowerForgivenessPayments":300},
+  "tieredStandard": {"minimumMonthlyPayment":50}
+}

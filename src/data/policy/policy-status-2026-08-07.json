@@ -1,0 +1,10 @@
+{
+  "asOf": "2026-08-07",
+  "contractVersion": "1.0.0",
+  "shipStatus": "ready_for_implementation_with_scope_guards",
+  "scopeGuards": [
+    "SAI v1 supports dependent students (Formula A) only.",
+    "Repayment v1 supports Direct Loans only.",
+    "PAYE/ICR are not simulated in v1."
+  ]
+}

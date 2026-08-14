@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-08-07",
+  "saiRounding": [
+    {"input": 11.549, "expected": 12},
+    {"input": 11.449, "expected": 11},
+    {"input": -11.549, "expected": -12},
+    {"input": -11.449, "expected": -11},
+    {"input": 11.5, "expected": 12},
+    {"input": -11.5, "expected": -12}
+  ],
+  "pell": [
+    {"name": "constants", "expected": {"maxPell": 7395, "minPell": 740, "pellIneligibleAtSaiGte": 14790}},
+    {"name": "calculated Pell", "inputs": {"sai": 1004, "pellCoa": 9999}, "expected": {"raw": 6391, "roundedNearest5": 6390, "scheduledAward": 6390}}
+  ],
+  "rap": [
+    {"agi": 10000, "dependents": 0, "expectedAnnual": 120, "expectedMonthly": 10},
+    {"agi": 75000, "dependents": 0, "expectedAnnual": 5250, "expectedMonthly": 437.5},
+    {"agi": 30000, "dependents": 3, "expectedAnnual": 600, "expectedMonthly": 10}
+  ],
+  "tieredStandard": [
+    {"balance": 24999, "expectedMonths": 120},
+    {"balance": 25000, "expectedMonths": 180},
+    {"balance": 50000, "expectedMonths": 240},
+    {"balance": 100000, "expectedMonths": 300}
+  ]
+}

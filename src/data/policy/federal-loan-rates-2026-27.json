@@ -1,0 +1,13 @@
+{
+  "id": "federal-direct-loan-rates-2026-27",
+  "postedDate": "2026-06-04",
+  "effectiveFrom": "2026-07-01",
+  "effectiveThrough": "2027-06-30",
+  "rates": {
+    "directSubsidizedUndergrad": 0.0652,
+    "directUnsubsidizedUndergrad": 0.0652,
+    "directUnsubsidizedGraduateProfessional": 0.0807,
+    "directPlusParentOrGradProfessional": 0.0907
+  },
+  "fixedForLifeOfLoan": true
+}
