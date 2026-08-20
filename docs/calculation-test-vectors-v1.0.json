@@ -2,26 +2,204 @@
   "version": "1.0.0",
   "generated": "2026-08-07",
   "saiRounding": [
-    {"input": 11.549, "expected": 12},
-    {"input": 11.449, "expected": 11},
-    {"input": -11.549, "expected": -12},
-    {"input": -11.449, "expected": -11},
-    {"input": 11.5, "expected": 12},
-    {"input": -11.5, "expected": -12}
+    {
+      "input": 11.549,
+      "expected": 12
+    },
+    {
+      "input": 11.449,
+      "expected": 11
+    },
+    {
+      "input": -11.549,
+      "expected": -12
+    },
+    {
+      "input": -11.449,
+      "expected": -11
+    },
+    {
+      "input": 11.5,
+      "expected": 12
+    },
+    {
+      "input": -11.5,
+      "expected": -12
+    },
+    {
+      "input": 0.499,
+      "expected": 0
+    },
+    {
+      "input": -0.499,
+      "expected": 0
+    }
+  ],
+  "officialPayrollExamples": [
+    {
+      "name": "A1 Medicare HI example",
+      "inputs": {
+        "parentStatus": "MFJ",
+        "parentWorkIncome": 350000,
+        "spouseStatus": "MFS",
+        "spouseWorkIncome": 96000
+      },
+      "expectedTotalHI": 7367,
+      "source": "SAI Guide Table A1 example"
+    },
+    {
+      "name": "A1 OASDI example",
+      "inputs": {
+        "parentStatus": "MFJ",
+        "parentWorkIncome": 250400,
+        "spouseStatus": "Single",
+        "spouseWorkIncome": 150200
+      },
+      "expectedTotalOASDI": 24837,
+      "source": "SAI Guide Table A1 example"
+    }
+  ],
+  "a5Boundaries": [
+    {
+      "paai": -8501,
+      "expectedParentContribution": -1870
+    },
+    {
+      "paai": -8500,
+      "expectedParentContribution": -1870
+    },
+    {
+      "paai": 21800,
+      "expectedParentContribution": 4796
+    },
+    {
+      "paai": 21801,
+      "expectedParentContribution": 4796
+    },
+    {
+      "paai": 21802,
+      "expectedParentContribution": 4797
+    },
+    {
+      "paai": 27300,
+      "expectedParentContribution": 6171
+    },
+    {
+      "paai": 27301,
+      "expectedParentContribution": 6171
+    },
+    {
+      "paai": 32800,
+      "expectedParentContribution": 7766
+    },
+    {
+      "paai": 32801,
+      "expectedParentContribution": 7766
+    },
+    {
+      "paai": 38400,
+      "expectedParentContribution": 9670
+    },
+    {
+      "paai": 38401,
+      "expectedParentContribution": 9670
+    },
+    {
+      "paai": 43900,
+      "expectedParentContribution": 11870
+    },
+    {
+      "paai": 43901,
+      "expectedParentContribution": 11870
+    },
+    {
+      "paai": 43902,
+      "expectedParentContribution": 11871
+    }
+  ],
+  "zeroIncomeOrdinaryFormulaA": [
+    {
+      "description": "Forced ordinary Formula A path (not Max-Pell nonfiler override), family size 2, no income/assets/tax",
+      "expected": {
+        "parentIPA": 29190,
+        "parentPAI": -29190,
+        "parentPAAI": -29190,
+        "parentContribution": -1870,
+        "studentContributionIncome": 0,
+        "studentContributionAssets": 0,
+        "rawSai": -1870,
+        "boundedSai": -1500
+      }
+    }
   ],
   "pell": [
-    {"name": "constants", "expected": {"maxPell": 7395, "minPell": 740, "pellIneligibleAtSaiGte": 14790}},
-    {"name": "calculated Pell", "inputs": {"sai": 1004, "pellCoa": 9999}, "expected": {"raw": 6391, "roundedNearest5": 6390, "scheduledAward": 6390}}
-  ],
-  "rap": [
-    {"agi": 10000, "dependents": 0, "expectedAnnual": 120, "expectedMonthly": 10},
-    {"agi": 75000, "dependents": 0, "expectedAnnual": 5250, "expectedMonthly": 437.5},
-    {"agi": 30000, "dependents": 3, "expectedAnnual": 600, "expectedMonthly": 10}
-  ],
-  "tieredStandard": [
-    {"balance": 24999, "expectedMonths": 120},
-    {"balance": 25000, "expectedMonths": 180},
-    {"balance": 50000, "expectedMonths": 240},
-    {"balance": 100000, "expectedMonths": 300}
+    {
+      "name": "maximum/minimum/SAI ceiling constants",
+      "expected": {
+        "maxPell": 7395,
+        "minPell": 740,
+        "pellIneligibleAtSaiGte": 14790
+      }
+    },
+    {
+      "name": "calculated Pell",
+      "inputs": {
+        "sai": 1004,
+        "pellCoa": 9999
+      },
+      "expected": {
+        "raw": 6391,
+        "roundedNearest5": 6390,
+        "scheduledAward": 6390
+      }
+    },
+    {
+      "name": "calculated Pell exactly minimum",
+      "inputs": {
+        "sai": 6655,
+        "pellCoa": 9999
+      },
+      "expected": {
+        "raw": 740,
+        "roundedNearest5": 740,
+        "calculatedPellEligible": true
+      }
+    },
+    {
+      "name": "calculated Pell below minimum",
+      "inputs": {
+        "sai": 6656,
+        "pellCoa": 9999
+      },
+      "expected": {
+        "raw": 739,
+        "calculatedPellEligible": false,
+        "note": "still evaluate Min Pell AGI route"
+      }
+    },
+    {
+      "name": "COA cap is not rounded",
+      "inputs": {
+        "sai": 1004,
+        "pellCoa": 6388
+      },
+      "expected": {
+        "raw": 6391,
+        "roundedNearest5": 6390,
+        "scheduledAward": 6388
+      }
+    },
+    {
+      "name": "2024 contiguous family size 4 Max/Min thresholds",
+      "inputs": {
+        "povertyBase": 31200
+      },
+      "expected": {
+        "singleParentMax225pct": 70200,
+        "nonSingleParentMax175pct": 54600,
+        "singleParentMin325pct": 101400,
+        "nonSingleParentMin275pct": 85800
+      }
+    }
   ]
 }

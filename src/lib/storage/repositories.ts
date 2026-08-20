@@ -1,6 +1,6 @@
 import type { NavigatorDatabase } from './database'
 import { navigatorDatabase } from './database'
-import { CURRENT_PROFILE_ID, STORAGE_METADATA, householdProfileSchema, storageMetadataSchema, type HouseholdProfile, type HouseholdProfileInput, type StorageMetadata } from './schema'
+import { CURRENT_PROFILE_ID, DATABASE_VERSION, STORAGE_METADATA, householdProfileSchema, storageMetadataSchema, type HouseholdProfile, type HouseholdProfileInput, type StorageMetadata } from './schema'
 
 export class HouseholdRepository {
   private readonly database: NavigatorDatabase
@@ -10,7 +10,7 @@ export class HouseholdRepository {
   }
 
   async save(input: HouseholdProfileInput): Promise<HouseholdProfile> {
-    const profile = householdProfileSchema.parse({ ...input, id: CURRENT_PROFILE_ID, updatedAt: new Date().toISOString() })
+    const profile = householdProfileSchema.parse({ ...input, id: CURRENT_PROFILE_ID, schemaVersion: DATABASE_VERSION, updatedAt: new Date().toISOString() })
     await this.database.transaction('rw', this.database.profiles, this.database.metadata, async () => {
       await this.database.profiles.put(profile)
       await this.database.metadata.put(STORAGE_METADATA)
