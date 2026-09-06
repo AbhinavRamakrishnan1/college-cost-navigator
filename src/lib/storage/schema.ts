@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
 export const DATABASE_NAME = 'college-cost-aid-navigator'
-export const DATABASE_VERSION = 2
+export const DATABASE_VERSION = 3
 export const BACKUP_FORMAT = 'college-cost-navigator-backup'
-export const BACKUP_FORMAT_VERSION = 2
+export const BACKUP_FORMAT_VERSION = 3
 export const CURRENT_PROFILE_ID = 'current-household'
 
 const dollars = z.number().finite()
@@ -41,9 +41,12 @@ export const householdProfileSchema = z.object({
   calculation:z.union([calculationProfileSchema,z.null()]), updatedAt:z.string().datetime(),
 })
 
+export const savedSchoolSchema=z.object({unitId:z.number().int().positive(),snapshotVersion:z.string().min(1),addedAt:z.string().datetime()})
+
 export const storageMetadataSchema = z.object({ id:z.literal('storage-schema'),databaseName:z.literal(DATABASE_NAME),databaseVersion:z.literal(DATABASE_VERSION),backupFormat:z.literal(BACKUP_FORMAT),backupFormatVersion:z.literal(BACKUP_FORMAT_VERSION) })
 export type HouseholdProfile = z.infer<typeof householdProfileSchema>
 export type HouseholdProfileInput = Omit<HouseholdProfile,'id'|'updatedAt'|'schemaVersion'>
 export type CalculationProfile = z.infer<typeof calculationProfileSchema>
+export type SavedSchool = z.infer<typeof savedSchoolSchema>
 export type StorageMetadata = z.infer<typeof storageMetadataSchema>
 export const STORAGE_METADATA: StorageMetadata = Object.freeze({ id:'storage-schema',databaseName:DATABASE_NAME,databaseVersion:DATABASE_VERSION,backupFormat:BACKUP_FORMAT,backupFormatVersion:BACKUP_FORMAT_VERSION })

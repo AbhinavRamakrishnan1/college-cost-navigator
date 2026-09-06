@@ -35,8 +35,6 @@ export function AidEstimatePage() {
     </div>
   </PageShell>
 }
-export function SchoolsPage() { return <AppPlaceholder eyebrow="Schools" title="Build a school list around the questions that matter." intro="Search and College Scorecard ingestion are reserved for a later phase." cardTitle="No schools added" message="The fictional household has no school records. This page currently demonstrates the future workspace." /> }
-export function ComparePage() { return <AppPlaceholder eyebrow="Compare" title="See choices side by side, without false precision." intro="Future comparisons will separate published cost, estimated aid, and assumptions." cardTitle="Nothing to compare yet" message="Add-school and net-price calculations are outside the Phase 1 scope." /> }
 export function RepaymentPage() { return <AppPlaceholder eyebrow="Repayment" title="Understand borrowing before it becomes a bill." intro="Repayment plans and projections are not calculated in Phase 1." cardTitle="Loan types stay distinct" message="The policy model distinguishes Parent PLUS from Grad/Professional PLUS. RAP, IBR, and Tiered Standard calculations are not implemented." /> }
 export function SettingsPage() {
   const profile = useLiveQuery(() => navigatorDatabase.profiles.get('current-household'))

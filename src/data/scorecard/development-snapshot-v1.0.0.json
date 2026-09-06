@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "source": "U.S. Department of Education College Scorecard API",
+    "sourceUrl": "https://api.data.gov/ed/collegescorecard/v1/schools.json",
+    "retrievalDate": "2026-08-20",
+    "scorecardDataYear": "September 2025 most-recent institution-level release; metrics use their published latest cohorts",
+    "snapshotVersion": "development-1.0.0",
+    "datasetKind": "development_fixture",
+    "recordCount": 3,
+    "checksumSha256": "78e4d4e1f9cfd65ed035a3d74bac665a35649aeb98d30ba931f894f58bbd2098"
+  },
+  "records": [
+    {
+      "unitId": 131520,
+      "name": "Howard University",
+      "state": "DC",
+      "control": "private_nonprofit",
+      "costOfAttendance": 54630,
+      "tuitionInState": 35810,
+      "tuitionOutOfState": 35810,
+      "averageNetPrice": 50539,
+      "averageNetPriceByIncome": {"0-30000":46051,"30001-48000":47477,"48001-75000":50245,"75001-110000":52981,"110001-plus":54270},
+      "graduationRate": 0.6934,
+      "medianFederalDebtAtGraduation": 24500,
+      "earnings": [{"label":"Median earnings 10 years after entry","yearsAfterEntry":10,"value":63066}],
+      "fieldOfStudyEarnings": [],
+      "dataYear": "latest cohorts in September 2025 release"
+    },
+    {
+      "unitId": 166683,
+      "name": "Massachusetts Institute of Technology",
+      "state": "MA",
+      "control": "private_nonprofit",
+      "costOfAttendance": 82730,
+      "tuitionInState": 62396,
+      "tuitionOutOfState": 62396,
+      "averageNetPrice": 20111,
+      "averageNetPriceByIncome": {"0-30000":-2533,"30001-48000":93,"48001-75000":1480,"75001-110000":11555,"110001-plus":48479},
+      "graduationRate": 0.9624,
+      "medianFederalDebtAtGraduation": 14768,
+      "earnings": [{"label":"Median earnings 10 years after entry","yearsAfterEntry":10,"value":143372}],
+      "fieldOfStudyEarnings": [],
+      "dataYear": "latest cohorts in September 2025 release"
+    },
+    {
+      "unitId": 204796,
+      "name": "Ohio State University-Main Campus",
+      "state": "OH",
+      "control": "public",
+      "costOfAttendance": 30305,
+      "tuitionInState": 13244,
+      "tuitionOutOfState": 40022,
+      "averageNetPrice": 17339,
+      "averageNetPriceByIncome": {"0-30000":4885,"30001-48000":5751,"48001-75000":9807,"75001-110000":20461,"110001-plus":27359},
+      "graduationRate": 0.8773,
+      "medianFederalDebtAtGraduation": 19976,
+      "earnings": [{"label":"Median earnings 10 years after entry","yearsAfterEntry":10,"value":60409}],
+      "fieldOfStudyEarnings": [],
+      "dataYear": "latest cohorts in September 2025 release"
+    }
+  ]
+}
