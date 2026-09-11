@@ -2,11 +2,8 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Link } from 'react-router-dom'
 import { PageShell, PlaceholderCard } from '../components/PageShell'
 import { navigatorDatabase } from '../lib/storage/database'
-import { householdRepository } from '../lib/storage/repositories'
-import { STORAGE_METADATA } from '../lib/storage/schema'
 import { calculateProfileAid } from '../lib/calculations'
 
-function AppPlaceholder({ eyebrow, title, intro, cardTitle, message }: { eyebrow: string; title: string; intro: string; cardTitle: string; message: string }) { return <PageShell eyebrow={eyebrow} title={title} intro={intro}><PlaceholderCard title={cardTitle}><p>{message}</p><p className="mt-4 rounded-lg bg-moss-100 p-4 text-sm font-semibold text-moss-700">Phase 2 placeholder · no calculation</p></PlaceholderCard></PageShell> }
 export function AidEstimatePage() {
   const profile = useLiveQuery(() => navigatorDatabase.profiles.get('current-household'), [], null)
   const loading = profile === null
@@ -34,13 +31,4 @@ export function AidEstimatePage() {
       <Link className="mt-3 inline-block font-bold text-moss-700 underline" to="/methodology">Review methodology and sources</Link>
     </div>
   </PageShell>
-}
-export function RepaymentPage() { return <AppPlaceholder eyebrow="Repayment" title="Understand borrowing before it becomes a bill." intro="Repayment plans and projections are not calculated in Phase 1." cardTitle="Loan types stay distinct" message="The policy model distinguishes Parent PLUS from Grad/Professional PLUS. RAP, IBR, and Tiered Standard calculations are not implemented." /> }
-export function SettingsPage() {
-  const profile = useLiveQuery(() => navigatorDatabase.profiles.get('current-household'))
-  const deleteAll = async () => {
-    if (!window.confirm('Delete all College Cost Navigator data stored in this browser? This cannot be undone.')) return
-    await householdRepository.deleteAll()
-  }
-  return <PageShell eyebrow="Settings" title="Control your local planning data." intro="Your household profile is stored only in this browser. You can remove it at any time."><div className="grid max-w-4xl gap-5 md:grid-cols-2"><PlaceholderCard title="Local storage"><p>{profile ? `A profile for ${profile.studentName} is saved on this device.` : 'No household profile is saved on this device.'}</p><button type="button" className="mt-5 rounded-lg border border-red-700 bg-white px-4 py-3 font-bold text-red-800 hover:bg-red-50 disabled:opacity-50" disabled={!profile} onClick={deleteAll}>Delete all local data</button></PlaceholderCard><PlaceholderCard title="Backup compatibility"><dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm"><dt>Database schema</dt><dd className="font-bold">v{STORAGE_METADATA.databaseVersion}</dd><dt>Backup format</dt><dd className="font-bold">v{STORAGE_METADATA.backupFormatVersion}</dd></dl><p className="mt-4 text-sm">Export and restore are not implemented in Phase 2; metadata is reserved for a future compatible format.</p></PlaceholderCard></div></PageShell>
 }

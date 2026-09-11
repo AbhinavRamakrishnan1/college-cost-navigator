@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
 export const DATABASE_NAME = 'college-cost-aid-navigator'
-export const DATABASE_VERSION = 3
+export const DATABASE_VERSION = 4
 export const BACKUP_FORMAT = 'college-cost-navigator-backup'
-export const BACKUP_FORMAT_VERSION = 3
+export const BACKUP_FORMAT_VERSION = 4
 export const CURRENT_PROFILE_ID = 'current-household'
 
 const dollars = z.number().finite()
