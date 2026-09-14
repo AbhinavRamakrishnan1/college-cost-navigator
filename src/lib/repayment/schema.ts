@@ -20,6 +20,10 @@ export const projectionAssumptionsSchema=z.object({
   scenarioId:z.string().min(1),incomePath:z.array(pathEntrySchema).min(1),dependentPath:z.array(dependentEntrySchema).min(1),
   povertyGuidelineVersionByYear:z.record(z.string(),z.string()),recertificationAssumption:z.literal('annual_on_time'),
   paymentTimingAssumption:z.literal('on_time_monthly'),extraPayments:z.union([z.literal('none'),z.array(z.object({month:z.number().int().positive(),amountCents:z.number().int().positive()}))]),
+}).superRefine((value,context)=>{
+  for(const key of ['incomePath','dependentPath'] as const){
+    if(value[key].some((entry,index)=>index>0&&entry.year<=value[key][index-1].year))context.addIssue({code:'custom',path:[key],message:'Projection years must be unique and increasing.'})
+  }
 })
 export type DirectLoanType=z.infer<typeof directLoanTypeSchema>
 export type LoanScenario=z.infer<typeof loanScenarioSchema>

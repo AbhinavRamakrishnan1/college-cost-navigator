@@ -21,6 +21,8 @@ test('creates post-cutoff and legacy Direct Loan scenarios, persists, edits, and
   await page.getByLabel('First disbursement date').fill('2025-06-30')
   await page.getByLabel('Actual fixed APR (%) — optional').fill('6.5')
   await page.getByLabel('Verified legacy IBR cohort').selectOption('new')
+  await page.getByLabel('Stored IBR 10-year entry cap').fill('250')
+  await page.getByLabel('Eligible balance at IBR entry').fill('23456.78')
   await page.getByRole('button',{name:'Save loan scenario'}).click()
   const legacy=page.getByTestId('loan-scenario').filter({hasText:'Legacy IBR loan'})
   await expect(legacy.getByRole('heading',{name:'IBR (new)'})).toBeVisible()
@@ -28,7 +30,11 @@ test('creates post-cutoff and legacy Direct Loan scenarios, persists, edits, and
   await legacy.getByRole('button',{name:'Edit'}).click();await page.getByLabel('Verified legacy IBR cohort').selectOption('old');await page.getByRole('button',{name:'Update loan scenario'}).click()
   await expect(page.getByTestId('loan-scenario').filter({hasText:'Legacy IBR loan'}).getByRole('heading',{name:'IBR (old)'})).toBeVisible()
   await page.reload();await expect(page.getByTestId('loan-scenario')).toHaveCount(2)
-  for(const card of await page.getByTestId('loan-scenario').all())await card.getByRole('button',{name:'Delete'}).click()
+  // Re-resolve the first card after each removal; index locators shift as rows disappear.
+  for(let remaining=2;remaining>0;remaining--){
+    await page.getByTestId('loan-scenario').first().getByRole('button',{name:'Delete'}).click()
+    await expect(page.getByTestId('loan-scenario')).toHaveCount(remaining-1)
+  }
   await expect(page.getByText('No loan scenarios are stored on this device.')).toBeVisible()
   expect(networkPayloads).toEqual([])
   expect(consoleMessages.join(' ')).not.toContain('23456.78');expect(consoleMessages.join(' ')).not.toContain('45678.91')

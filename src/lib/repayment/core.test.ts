@@ -5,6 +5,33 @@ const now='2026-09-06T12:00:00.000Z'
 const loan=(overrides:Partial<LoanScenario>={}):LoanScenario=>({id:'loan-1',name:'Test loan',type:'direct_subsidized_undergrad',principalCents:2_000_000,accruedInterestCents:0,disbursementDate:'2026-07-01',fixedApr:null,enteredRepaymentAt:'2027-01-01',borrowerAgiCents:4_500_000,spouseAgiCents:0,filingChoice:'unmarried',familySize:1,state:'Ohio',rapDependents:0,spouseEligibleDebtCents:0,repayePaymentsSince2024:0,ibrEnrollmentSnapshot:null,parentPlusConsolidationHistory:null,subsidizedConsolidationPortionCents:0,createdAt:now,updatedAt:now,...overrides})
 const assumptions=(scenarioId='loan-1'):ProjectionAssumptions=>({scenarioId,incomePath:[{year:2026,agiCents:4_500_000}],dependentPath:[{year:2026,dependents:0}],povertyGuidelineVersionByYear:{'2026':'hhs-poverty-guidelines-2026'},recertificationAssumption:'annual_on_time',paymentTimingAssumption:'on_time_monthly',extraPayments:'none'})
 
+describe('Phase 6 fail-closed and projection regressions',()=>{
+  it('requires explicit consolidation history for both income-driven plans',()=>{
+    const unknown=loan({type:'direct_consolidation',disbursementDate:'2025-01-01',fixedApr:.06,ibrEnrollmentSnapshot:{cohort:'new',eligibleBalanceCents:2_000_000,tenYearStandardCapCents:25000}})
+    expect(calculateRapPayment(unknown).status).toBe('unavailable')
+    expect(calculateIbrPayment(unknown).status).toBe('unavailable')
+  })
+  it('compares the IBR $5 threshold before rounding to cents',()=>{
+    const legacy=loan({disbursementDate:'2025-01-01',fixedApr:.06,borrowerAgiCents:2453999,ibrEnrollmentSnapshot:{cohort:'new',eligibleBalanceCents:2000000,tenYearStandardCapCents:25000}})
+    expect(calculateIbrPayment(legacy)).toMatchObject({monthlyPaymentCents:0})
+    expect(calculateIbrPayment({...legacy,borrowerAgiCents:2454000})).toMatchObject({monthlyPaymentCents:1000})
+  })
+  it('allocates unpaid consolidation interest proportionally to the subsidized portion',()=>{
+    expect(ibrInterestProtectionCents(loan({type:'direct_consolidation',principalCents:2000000,subsidizedConsolidationPortionCents:1000000}),1,5000,10000)).toBe(2500)
+  })
+  it('uses calendar years when repayment begins in December',()=>{
+    const result=projectRepayment('ibr',loan({disbursementDate:'2025-01-01',enteredRepaymentAt:'2026-12-01',fixedApr:0,principalCents:10000,ibrEnrollmentSnapshot:{cohort:'new',eligibleBalanceCents:10000,tenYearStandardCapCents:5000}}),assumptions())
+    expect(result).toEqual({status:'unavailable',reason:'POLICY_VERSION_UNAVAILABLE'})
+  })
+  it('rejects projection assumptions belonging to a different loan',()=>{
+    expect(projectRepayment('rap',loan(),assumptions('other')).status).toBe('unavailable')
+  })
+  it('projects exactly 360 low-income RAP payments and matches $10 of principal per payment',()=>{
+    const result=projectRepayment('rap',loan({disbursementDate:'2025-01-01',fixedApr:.12,principalCents:10000000,borrowerAgiCents:0}),{...assumptions(),incomePath:[{year:2026,agiCents:0}]})
+    expect(result).toMatchObject({status:'projected',months:360,totalPaidCents:360000,principalMatchedCents:360000,forgivenCents:9640000,endingBalanceCents:0})
+  })
+})
+
 describe('2026 Direct Loan rates and Tiered Standard',()=>{
   it('selects exact disbursement cohort rates and fails closed outside it',()=>{expect(selectLoanRate(loan())).toMatchObject({status:'available',apr:.0652});expect(selectLoanRate(loan({fixedApr:.99}))).toMatchObject({status:'available',apr:.0652,source:'federal_2026_27'});expect(selectLoanRate(loan({disbursementDate:'2026-06-30'}))).toMatchObject({status:'unavailable'});expect(selectLoanRate(loan({disbursementDate:'2020-01-01',fixedApr:.0475}))).toMatchObject({status:'available',apr:.0475,source:'borrower_provided'})})
   it.each([[2_499_900,120],[2_500_000,180],[4_999_900,180],[5_000_000,240],[9_999_900,240],[10_000_000,300]])('selects term at %i cents as %i months',(balance,term)=>expect(tieredStandardTermMonths(balance)).toBe(term))
