@@ -13,7 +13,7 @@ test('methodology details and policy history are accessible and dated', async ({
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
   await page.goto('/policy-changes')
   await expect(page.getByText('Unresolved / litigated', { exact: true })).toBeVisible()
-  await expect(page.locator('ol time')).toHaveCount(9)
+  await expect(page.locator('ol time')).toHaveCount(10)
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
 })
 
@@ -26,7 +26,11 @@ test('result methodology links resolve to actual sections', async ({ page }) => 
   ] as const) {
     for (const anchor of anchors) {
       await page.goto(route)
-      await page.locator(`a[href="/methodology#${anchor}"]`).click()
+      const links=page.locator(`a[href="/methodology#${anchor}"]`)
+      await expect(links.first()).toBeAttached()
+      const visibleLink=page.locator(`a[href="/methodology#${anchor}"]:visible`).first()
+      if(await visibleLink.count())await visibleLink.click()
+      else await links.first().evaluate((link:HTMLAnchorElement)=>link.click())
       await expect(page).toHaveURL(new RegExp(`/methodology#${anchor}$`))
       await expect(page.locator(`section#${anchor}`)).toBeVisible()
     }

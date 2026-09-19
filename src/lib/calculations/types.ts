@@ -70,7 +70,7 @@ export interface SaiWorksheet {
   parentAllowances: number; parentAvailableIncome: number; parentNetWorth: number
   parentContributionFromAssets: number; parentAdjustedAvailableIncome: number; parentContribution: number
   studentIncomeAdditions: number; studentIncomeOffsets: number; totalStudentIncome: number
-  studentMedicareHi: number; studentOasdi: number; studentAllowances: number; studentAvailableIncome: number
+  studentMedicareHi: number; studentOasdi: number; studentIncomeProtectionAllowance: number; studentAllowances: number; studentAvailableIncome: number
   studentContributionFromIncome: number; studentNetWorth: number; studentContributionFromAssets: number
   assetExempt: boolean; rawSai: number; calculatedSai: number; finalSai: number
 }
@@ -92,7 +92,24 @@ export interface PellInputs {
   possibleSpecialRuleDependent?: boolean
 }
 
+export interface PellTrace {
+  path: 'maximum' | 'calculated' | 'minimum' | 'ineligible' | 'special_rule_verification'
+  reportedSai: number
+  pellSai: number
+  maximumScheduledAward: number
+  minimumScheduledAward: number
+  pellCoa: number
+  coaLimited: boolean
+  familyIncome?: number
+  maximumIncomeThreshold?: number
+  minimumIncomeThreshold?: number
+  maximumReason?: 'qualifying_nonfiler' | 'family_income'
+  rawCalculatedPell?: number
+  roundedCalculatedPell?: number
+  ineligibleReason?: 'sai_threshold' | 'income_threshold'
+}
+
 export type PellResult =
-  | { status: 'unsupported'; reason: 'special_rule_not_modeled'; specialRuleNotModeled: true }
-  | { status: 'ineligible'; reason: 'sai_threshold' | 'income_threshold' }
-  | { status: 'eligible'; eligibility: 'maximum' | 'calculated' | 'minimum'; scheduledAward: number; rawCalculatedPell?: number; roundedCalculatedPell?: number; label: 'Scheduled Award estimate' }
+  | { status: 'unsupported'; reason: 'special_rule_not_modeled'; specialRuleNotModeled: true; trace: PellTrace }
+  | { status: 'ineligible'; reason: 'sai_threshold' | 'income_threshold'; trace: PellTrace }
+  | { status: 'eligible'; eligibility: 'maximum' | 'calculated' | 'minimum'; scheduledAward: number; rawCalculatedPell?: number; roundedCalculatedPell?: number; label: 'Scheduled Award estimate'; trace: PellTrace }

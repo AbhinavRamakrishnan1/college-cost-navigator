@@ -84,7 +84,7 @@ describe('Pell', () => {
   it('evaluates Minimum Pell when calculated Pell is below minimum', () => expect(pell({sai:6656,parentAgi:85800})).toMatchObject({status:'eligible',eligibility:'minimum',scheduledAward:740}))
   it('does not round a smaller Pell COA cap', () => expect(pell({pellCoa:6388})).toMatchObject({scheduledAward:6388}))
   it('enforces the SAI threshold and preserves the unmodeled special rule', () => {
-    expect(pell({sai:14790})).toEqual({status:'ineligible',reason:'sai_threshold'})
-    expect(pell({sai:14790,possibleSpecialRuleDependent:true})).toEqual({status:'unsupported',reason:'special_rule_not_modeled',specialRuleNotModeled:true})
+    expect(pell({sai:14790})).toEqual({status:'ineligible',reason:'sai_threshold',trace:{path:'ineligible',reportedSai:14790,pellSai:14790,maximumScheduledAward:7395,minimumScheduledAward:740,pellCoa:9999,coaLimited:false,ineligibleReason:'sai_threshold'}})
+    expect(pell({sai:14790,possibleSpecialRuleDependent:true})).toEqual({status:'unsupported',reason:'special_rule_not_modeled',specialRuleNotModeled:true,trace:{path:'special_rule_verification',reportedSai:14790,pellSai:14790,maximumScheduledAward:7395,minimumScheduledAward:740,pellCoa:9999,coaLimited:false}})
   })
 })

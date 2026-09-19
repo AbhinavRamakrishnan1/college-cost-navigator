@@ -14,22 +14,23 @@ export function pellPovertyGuideline(familySize: number, state: string): number 
 }
 export function calculatePell(input: PellInputs): PellResult {
   residenceSchema.parse(input.parentState)
+  const baseTrace={reportedSai:input.sai,pellSai:Math.max(input.sai,0),maximumScheduledAward:MAX_PELL,minimumScheduledAward:MIN_PELL,pellCoa:input.pellCoa,coaLimited:false}
   // V1 cannot certify this statutory exception, at any SAI.
-  if (input.possibleSpecialRuleDependent) return { status: 'unsupported', reason: 'special_rule_not_modeled', specialRuleNotModeled: true }
-  if (input.sai >= PELL_SAI_CEILING && input.possibleSpecialRuleDependent) return { status: 'unsupported', reason: 'special_rule_not_modeled', specialRuleNotModeled: true }
-  if (input.sai >= PELL_SAI_CEILING) return { status: 'ineligible', reason: 'sai_threshold' }
+  if (input.possibleSpecialRuleDependent) return { status: 'unsupported', reason: 'special_rule_not_modeled', specialRuleNotModeled: true,trace:{...baseTrace,path:'special_rule_verification'} }
+  if (input.sai >= PELL_SAI_CEILING) return { status: 'ineligible', reason: 'sai_threshold',trace:{...baseTrace,path:'ineligible',ineligibleReason:'sai_threshold'} }
   const base = pellPovertyGuideline(input.familySize, input.parentState)
   const agi = input.parentAgi + (input.parentForeignIncomeExclusion ?? 0)
   const maxThreshold = saiWhole(base * (input.parentSingleParent ? 2.25 : 1.75))
   const maxEligible = input.qualifyingParentNonfiler || (agi > 0 && agi <= maxThreshold)
-  if (maxEligible) return { status: 'eligible', eligibility: 'maximum', scheduledAward: Math.min(MAX_PELL, input.pellCoa), label: 'Scheduled Award estimate' }
+  if (maxEligible) {const scheduledAward=Math.min(MAX_PELL,input.pellCoa);return { status: 'eligible', eligibility: 'maximum', scheduledAward, label: 'Scheduled Award estimate',trace:{...baseTrace,path:'maximum',familyIncome:agi,maximumIncomeThreshold:maxThreshold,maximumReason:input.qualifyingParentNonfiler?'qualifying_nonfiler':'family_income',coaLimited:input.pellCoa<MAX_PELL} }}
   // 20 USC 1070a(b)(1)(B): negative SAI is zero for this subtraction only.
-  const raw = MAX_PELL - Math.max(input.sai, 0)
+  const raw = MAX_PELL - baseTrace.pellSai
   if (raw >= MIN_PELL) {
     const rounded = nearestFive(raw)
-    return { status: 'eligible', eligibility: 'calculated', rawCalculatedPell: raw, roundedCalculatedPell: rounded, scheduledAward: Math.min(rounded, input.pellCoa), label: 'Scheduled Award estimate' }
+    const scheduledAward=Math.min(rounded,input.pellCoa)
+    return { status: 'eligible', eligibility: 'calculated', rawCalculatedPell: raw, roundedCalculatedPell: rounded, scheduledAward, label: 'Scheduled Award estimate',trace:{...baseTrace,path:'calculated',familyIncome:agi,maximumIncomeThreshold:maxThreshold,rawCalculatedPell:raw,roundedCalculatedPell:rounded,coaLimited:input.pellCoa<rounded} }
   }
   const minThreshold = saiWhole(base * (input.parentSingleParent ? 3.25 : 2.75))
-  if (agi <= minThreshold) return { status: 'eligible', eligibility: 'minimum', scheduledAward: Math.min(MIN_PELL, input.pellCoa), label: 'Scheduled Award estimate' }
-  return { status: 'ineligible', reason: 'income_threshold' }
+  if (agi <= minThreshold) {const scheduledAward=Math.min(MIN_PELL,input.pellCoa);return { status: 'eligible', eligibility: 'minimum', scheduledAward, label: 'Scheduled Award estimate',trace:{...baseTrace,path:'minimum',familyIncome:agi,maximumIncomeThreshold:maxThreshold,minimumIncomeThreshold:minThreshold,rawCalculatedPell:raw,coaLimited:input.pellCoa<MIN_PELL} }}
+  return { status: 'ineligible', reason: 'income_threshold',trace:{...baseTrace,path:'ineligible',familyIncome:agi,maximumIncomeThreshold:maxThreshold,minimumIncomeThreshold:minThreshold,rawCalculatedPell:raw,ineligibleReason:'income_threshold'} }
 }

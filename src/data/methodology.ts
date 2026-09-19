@@ -22,9 +22,14 @@ export const sources = [
   { id: 'ibr-change', agency: 'Federal Student Aid', title: 'Federal Student Loan Program Provisions Effective Upon Enactment', date: 'GEN-25-04 · published 2025-07-18 · hardship removal effective 2025-07-04', url: `${fsa}/knowledge-center/library/dear-colleague-letters/2025-07-18/federal-student-loan-program-provisions-effective-upon-enactment-under-one-big-beautiful-bill-act` },
   { id: 'litigation', agency: 'Federal Student Aid', title: 'Update to the List of Professional Degree Programs Due to Court Order', date: 'Published 2026-06-29 · updated 2026-07-10 · status frozen 2026-08-07', url: `${fsa}/knowledge-center/library/electronic-announcements/2026-06-29/update-list-professional-degree-programs-due-court-order-updated-july-10-2026` },
   { id: 'scorecard', agency: snapshot.metadata.source, title: 'College Scorecard school-data snapshot', date: `Retrieved ${snapshot.metadata.retrievalDate} · ${snapshot.metadata.snapshotVersion} · ${snapshot.metadata.scorecardDataYear}`, url: snapshot.metadata.sourceUrl },
+  { id: 'scorecard-documentation', agency: 'U.S. Department of Education', title: 'College Scorecard institution-data documentation', date: 'Technical documentation · accessed 2026-09-19', url: 'https://collegescorecard.ed.gov/assets/InstitutionDataDocumentation.pdf' },
 ]
 export const baseline = status
 export const schoolMetadata = snapshot.metadata
+export const policyContexts={
+  aid:{label:'Federal aid rules: 2026–27 award year',verified:status.asOf,methodology:'/methodology#sai'},
+  repayment:{label:'Repayment rules: 2026 implementation baseline',verified:status.asOf,methodology:'/methodology#repayment'},
+} as const
 
 export const methodologySections = [
   { id: 'sai', title: 'Student Aid Index: dependent students only', summary: 'SAI is an eligibility index, not a bill, a family payment, or a school price. V1 implements 2026–27 Formula A only; independent-student Formulas B/C remain unsupported.', details: [
@@ -49,8 +54,9 @@ export const methodologySections = [
     `The national institution snapshot contains ${snapshot.metadata.recordCount} records. Snapshot ${snapshot.metadata.snapshotVersion}; retrieval date ${snapshot.metadata.retrievalDate}. Data release: ${snapshot.metadata.scorecardDataYear}.`,
     'Cost of attendance and tuition/fees describe published costs; average net price and federal income-bracket averages describe historical net prices. Median federal debt at graduation is not your borrowing forecast. Graduation rates and earnings describe measured populations, not individual promises.',
     'Earnings metrics may use different cohorts and observation periods. A snapshot release year is not a uniform cohort year. The production snapshot includes 10-year-after-entry institution earnings where available, but no first-year or field-of-study earnings. Missing federal values remain null and display Not available, never zero.',
+    'For a complete supported dependent-student profile, the optional local income-bracket suggestion uses parent AGI plus student AGI to align with the Scorecard family-income measure. An incomplete profile leaves the selector blank. The user can always override the suggestion, and no household value is sent with school-data requests.',
     'Institutional aid varies substantially; each school supplies its actual aid offer. The app keeps your local SAI/Pell estimate separate and does not claim cost minus Pell equals your exact net price. Data is bundled static same-origin reference data; browsers never call the College Scorecard API.',
-  ], sources: ['scorecard'] },
+  ], sources: ['scorecard', 'scorecard-documentation'] },
   { id: 'comparison', title: 'Debt-to-earnings and neutral comparisons', summary: 'The ratio is a neutral app heuristic—not a federal eligibility test, investment verdict, or universal best-school score.', details: [
     'Exact implemented formula: Scorecard median federal debt at graduation ÷ valid median annual earnings one year after entry. The result is displayed as a multiple (×), rounded to two decimals. It is not monthly debt service divided by monthly income.',
     'For the denominator, a matching selected CIP field record tagged yearsAfterEntry = 1 takes precedence; otherwise the institution first-year record is used. Missing/negative debt, missing earnings, or earnings at or below zero produce Not available. Later earnings are never substituted into this ratio. The current production snapshot therefore has unavailable first-year ratios.',
@@ -92,6 +98,7 @@ export const methodologySections = [
 ]
 
 export const policyEvents = [
+  { date:'2026-09-19',status:'v1.1 Phase 1',title:'Explainability and result comprehension',text:'Adds progressive SAI and Pell calculation traces, clearer federal-aid scope, locally suggested College Scorecard income brackets, concise jargon help, contextual navigation, and policy-version context. Federal formulas and frozen policy data are unchanged.',source:'sai-guide-2026-27' },
   { date:'2026-09-19',status:'Correctness patch',title:'v1.0.1 correctness corrections',text:'Unknown profile answers remain incomplete; canonical facts determine eligibility; both tax returns and omitted exempt assets are preserved. Negative SAI is zero solely for Calculated Pell subtraction. Residence and special-rule handling are corrected. Repayment applicability requires dated consolidation and borrower-wide history; legacy Standard is not Tiered Standard. Existing local data is retained for review during migration.',source:'pell-statute' },
   { date: '2025-07-04', status: 'Effective', title: 'IBR partial-financial-hardship requirement removed', text: 'GEN-25-04, published July 18, records the July 4 effective change. The app requires a verified cohort and entry snapshot, not hardship.', source: 'ibr-change' },
   { date: '2025-08', status: 'Historical', title: '2026–27 SAI/Pell Guide Version 1.1', text: 'The project uses this dated guide for dependent Formula A and Pell. SAI is the index replacing EFC terminology, not a family bill; number in college no longer divides the parent contribution.', source: 'sai-guide-2026-27' },

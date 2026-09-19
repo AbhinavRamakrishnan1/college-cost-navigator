@@ -55,6 +55,7 @@ test('an incomplete stored profile does not guess an estimate', async ({ page })
   await page.goto('/app/aid-estimate')
   await expect(page.getByText('Incomplete: financial inputs required')).toBeVisible()
   await expect(page.getByTestId('calculated-sai')).toHaveCount(0)
+  await expect(page.getByText('$0',{exact:true})).toHaveCount(0)
 })
 
 test('an independent stored profile remains explicitly unsupported', async ({ page }) => {

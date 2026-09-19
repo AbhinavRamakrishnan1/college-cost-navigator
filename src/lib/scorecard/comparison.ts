@@ -1,7 +1,10 @@
 import type { SchoolRecord } from './schema'
+import type { HouseholdProfile } from '../storage/schema'
+import { calculateProfileAid } from '../calculations'
 
 export const INCOME_BRACKETS=['0-30000','30001-48000','48001-75000','75001-110000','110001-plus'] as const
 export type IncomeBracket=typeof INCOME_BRACKETS[number]
+export const INCOME_BRACKET_LABELS:Record<IncomeBracket,string>={'0-30000':'$0–$30,000','30001-48000':'$30,001–$48,000','48001-75000':'$48,001–$75,000','75001-110000':'$75,001–$110,000','110001-plus':'$110,001+'}
 export type ComparisonSort='saved_order'|'cost_low'|'net_price_low'|'graduation_high'|'debt_low'|'earnings_high'|'debt_to_earnings_low'
 
 export interface ComparableSchoolValues {
@@ -17,6 +20,16 @@ export interface ComparableSchoolValues {
 }
 
 const finiteOrNull=(value:number|null|undefined)=>typeof value==='number'&&Number.isFinite(value)?value:null
+export function incomeBracketForFamilyIncome(value:number):IncomeBracket|null {
+  if(!Number.isFinite(value))return null
+  if(value<=30000)return '0-30000';if(value<=48000)return '30001-48000';if(value<=75000)return '48001-75000';if(value<=110000)return '75001-110000';return '110001-plus'
+}
+export function deriveHouseholdIncomeBracket(profile:HouseholdProfile|undefined|null):IncomeBracket|null {
+  if(!profile||calculateProfileAid(profile).status!=='calculated')return null
+  const parentAgi=profile.calculation?.parentIncome.agi,studentAgi=profile.calculation?.studentIncome.agi
+  if(typeof parentAgi!=='number'||typeof studentAgi!=='number')return null
+  return incomeBracketForFamilyIncome(parentAgi+studentAgi)
+}
 export function selectInstitutionEarnings(school:SchoolRecord,yearsAfterEntry:number):number|null {
   return finiteOrNull(school.earnings.find((outcome)=>outcome.yearsAfterEntry===yearsAfterEntry)?.value)
 }
@@ -39,9 +52,9 @@ export function selectFirstYearEarnings(school:SchoolRecord,intendedCip?:string)
   const field=intendedCip?school.fieldOfStudyEarnings.find((item)=>item.cipCode===intendedCip&&item.yearsAfterEntry===1):undefined
   return finiteOrNull(field?.medianEarnings)??selectInstitutionEarnings(school,1)
 }
-export function getComparableSchoolValues(school:SchoolRecord,incomeBracket:IncomeBracket='48001-75000',intendedCip?:string):ComparableSchoolValues {
+export function getComparableSchoolValues(school:SchoolRecord,incomeBracket?:IncomeBracket,intendedCip?:string):ComparableSchoolValues {
   const earningsOneYear=selectFirstYearEarnings(school,intendedCip)
-  return {publishedCost:finiteOrNull(school.costOfAttendance),averageNetPrice:finiteOrNull(school.averageNetPrice),incomeBracketNetPrice:finiteOrNull(school.averageNetPriceByIncome[incomeBracket]),graduationRate:finiteOrNull(school.graduationRate),medianFederalDebt:finiteOrNull(school.medianFederalDebtAtGraduation),earningsOneYear,earningsFourYears:selectInstitutionEarnings(school,4),earningsTenYears:selectInstitutionEarnings(school,10),debtToFirstYearEarnings:debtToFirstYearEarnings(school.medianFederalDebtAtGraduation,earningsOneYear)}
+  return {publishedCost:finiteOrNull(school.costOfAttendance),averageNetPrice:finiteOrNull(school.averageNetPrice),incomeBracketNetPrice:incomeBracket?finiteOrNull(school.averageNetPriceByIncome[incomeBracket]):null,graduationRate:finiteOrNull(school.graduationRate),medianFederalDebt:finiteOrNull(school.medianFederalDebtAtGraduation),earningsOneYear,earningsFourYears:selectInstitutionEarnings(school,4),earningsTenYears:selectInstitutionEarnings(school,10),debtToFirstYearEarnings:debtToFirstYearEarnings(school.medianFederalDebtAtGraduation,earningsOneYear)}
 }
 function sortValue(school:SchoolRecord,sort:ComparisonSort,bracket:IncomeBracket,intendedCip?:string):number|null {
   const values=getComparableSchoolValues(school,bracket,intendedCip)
