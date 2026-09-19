@@ -1,0 +1,13 @@
+{
+  "source": "U.S. Department of Education College Scorecard",
+  "sourceUrl": "https://ed-public-download.scorecard.network/downloads/Most-Recent-Cohorts-Institution_06102026.zip",
+  "retrievalDate": "2026-09-19",
+  "scorecardDataYear": "June 10, 2026 most-recent institution release; metric-specific mixed cohorts",
+  "snapshotVersion": "national-2026-06-10-v1",
+  "datasetKind": "full_snapshot",
+  "recordCount": 6273,
+  "checksumSha256": "1081c1888649b29afc78d8e826c4fdbae977648c9ea50761f12fb526b7c3954a",
+  "importerVersion": "csv-1",
+  "schemaVersion": 1,
+  "sourceCsvSha256": "89e8a35a6588dfb81a6ce78fa9df4cb99b36ef7aa4b28fb0157f9e3e1a7d81b5"
+}

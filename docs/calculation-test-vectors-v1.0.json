@@ -201,5 +201,347 @@
         "nonSingleParentMin275pct": 85800
       }
     }
-  ]
+  ],
+  "repayment": {
+    "reconciliation": {
+      "date": "2026-09-14",
+      "contractVersion": "1.0.0",
+      "source": "Contract sections 5–9 and pre-existing src/lib/repayment/core.test.ts; documentation-only reconciliation, no new federal rules. All monetary fields below are integer cents except APR.",
+      "policySource": "https://www.govinfo.gov/content/pkg/FR-2026-05-01/pdf/2026-08556.pdf"
+    },
+    "defaults": {
+      "id": "loan-1",
+      "name": "Test loan",
+      "type": "direct_subsidized_undergrad",
+      "principalCents": 2000000,
+      "accruedInterestCents": 0,
+      "disbursementDate": "2026-07-01",
+      "fixedApr": null,
+      "enteredRepaymentAt": "2027-01-01",
+      "borrowerAgiCents": 4500000,
+      "spouseAgiCents": 0,
+      "filingChoice": "unmarried",
+      "familySize": 1,
+      "state": "Ohio",
+      "rapDependents": 0,
+      "spouseEligibleDebtCents": 0,
+      "repayePaymentsSince2024": 0,
+      "ibrEnrollmentSnapshot": null,
+      "parentPlusConsolidationHistory": null,
+      "subsidizedConsolidationPortionCents": 0,
+      "createdAt": "2026-09-06T12:00:00.000Z",
+      "updatedAt": "2026-09-06T12:00:00.000Z"
+    },
+    "legacyDefaults": {
+      "id": "loan-1",
+      "name": "Test loan",
+      "type": "direct_subsidized_undergrad",
+      "principalCents": 2000000,
+      "accruedInterestCents": 0,
+      "disbursementDate": "2025-01-01",
+      "fixedApr": 0.065,
+      "enteredRepaymentAt": "2027-01-01",
+      "borrowerAgiCents": 4500000,
+      "spouseAgiCents": 0,
+      "filingChoice": "unmarried",
+      "familySize": 1,
+      "state": "Ohio",
+      "rapDependents": 0,
+      "spouseEligibleDebtCents": 0,
+      "repayePaymentsSince2024": 0,
+      "ibrEnrollmentSnapshot": {
+        "eligibleBalanceCents": 2000000,
+        "tenYearStandardCapCents": 25000,
+        "cohort": "new"
+      },
+      "parentPlusConsolidationHistory": null,
+      "subsidizedConsolidationPortionCents": 0,
+      "createdAt": "2026-09-06T12:00:00.000Z",
+      "updatedAt": "2026-09-06T12:00:00.000Z"
+    },
+    "rapAnnualTiers": [
+      {
+        "agiCents": 1000000,
+        "expectedAnnualBaseCents": 12000
+      },
+      {
+        "agiCents": 1000100,
+        "expectedAnnualBaseCents": 10001
+      },
+      {
+        "agiCents": 2000000,
+        "expectedAnnualBaseCents": 20000
+      },
+      {
+        "agiCents": 2000100,
+        "expectedAnnualBaseCents": 40002
+      },
+      {
+        "agiCents": 3000000,
+        "expectedAnnualBaseCents": 60000
+      },
+      {
+        "agiCents": 3000100,
+        "expectedAnnualBaseCents": 90003
+      },
+      {
+        "agiCents": 4000000,
+        "expectedAnnualBaseCents": 120000
+      },
+      {
+        "agiCents": 4000100,
+        "expectedAnnualBaseCents": 160004
+      },
+      {
+        "agiCents": 5000000,
+        "expectedAnnualBaseCents": 200000
+      },
+      {
+        "agiCents": 5000100,
+        "expectedAnnualBaseCents": 250005
+      },
+      {
+        "agiCents": 6000000,
+        "expectedAnnualBaseCents": 300000
+      },
+      {
+        "agiCents": 6000100,
+        "expectedAnnualBaseCents": 360006
+      },
+      {
+        "agiCents": 7000000,
+        "expectedAnnualBaseCents": 420000
+      },
+      {
+        "agiCents": 7000100,
+        "expectedAnnualBaseCents": 490007
+      },
+      {
+        "agiCents": 8000000,
+        "expectedAnnualBaseCents": 560000
+      },
+      {
+        "agiCents": 8000100,
+        "expectedAnnualBaseCents": 640008
+      },
+      {
+        "agiCents": 9000000,
+        "expectedAnnualBaseCents": 720000
+      },
+      {
+        "agiCents": 9000100,
+        "expectedAnnualBaseCents": 810009
+      },
+      {
+        "agiCents": 10000000,
+        "expectedAnnualBaseCents": 900000
+      },
+      {
+        "agiCents": 10000100,
+        "expectedAnnualBaseCents": 1000010
+      }
+    ],
+    "tieredBoundaries": [
+      {
+        "balanceCents": 2499900,
+        "expectedMonths": 120
+      },
+      {
+        "balanceCents": 2500000,
+        "expectedMonths": 180
+      },
+      {
+        "balanceCents": 4999900,
+        "expectedMonths": 180
+      },
+      {
+        "balanceCents": 5000000,
+        "expectedMonths": 240
+      },
+      {
+        "balanceCents": 9999900,
+        "expectedMonths": 240
+      },
+      {
+        "balanceCents": 10000000,
+        "expectedMonths": 300
+      }
+    ],
+    "rapPayments": [
+      {
+        "name": "approved fractional annual-cent regression: $30,001.99 AGI",
+        "overrides": { "borrowerAgiCents": 3000199 },
+        "expectedMonthlyPaymentCents": 7500
+      },
+      {
+        "name": "joint income, one dependent, equal debt",
+        "overrides": {
+          "borrowerAgiCents": 6000000,
+          "spouseAgiCents": 4000000,
+          "filingChoice": "married_filing_jointly",
+          "rapDependents": 1,
+          "spouseEligibleDebtCents": 2000000
+        },
+        "expectedMonthlyPaymentCents": 35000
+      },
+      {
+        "name": "three dependents low income floor",
+        "overrides": {
+          "borrowerAgiCents": 1000000,
+          "rapDependents": 3
+        },
+        "expectedMonthlyPaymentCents": 1000
+      },
+      {
+        "name": "five dependents low income floor",
+        "overrides": {
+          "borrowerAgiCents": 1000000,
+          "rapDependents": 5
+        },
+        "expectedMonthlyPaymentCents": 1000
+      }
+    ],
+    "ibrPayments": [
+      {
+        "name": "150% poverty zero discretionary income",
+        "overrides": {
+          "borrowerAgiCents": 2394000
+        },
+        "expectedMonthlyPaymentCents": 0
+      },
+      {
+        "name": "new IBR 10 percent",
+        "overrides": {
+          "borrowerAgiCents": 3594000
+        },
+        "expectedMonthlyPaymentCents": 10000
+      },
+      {
+        "name": "old IBR 15 percent",
+        "overrides": {
+          "borrowerAgiCents": 3594000,
+          "ibrEnrollmentSnapshot": {
+            "eligibleBalanceCents": 2000000,
+            "tenYearStandardCapCents": 25000,
+            "cohort": "old"
+          }
+        },
+        "expectedMonthlyPaymentCents": 15000
+      },
+      {
+        "name": "entry cap",
+        "overrides": {
+          "borrowerAgiCents": 10000000,
+          "ibrEnrollmentSnapshot": {
+            "eligibleBalanceCents": 2000000,
+            "tenYearStandardCapCents": 12345,
+            "cohort": "new"
+          }
+        },
+        "expectedMonthlyPaymentCents": 12345
+      },
+      {
+        "name": "below five dollars",
+        "overrides": {
+          "borrowerAgiCents": 2440000
+        },
+        "expectedMonthlyPaymentCents": 0
+      },
+      {
+        "name": "just below unrounded five dollar threshold",
+        "overrides": {
+          "borrowerAgiCents": 2453999
+        },
+        "expectedMonthlyPaymentCents": 0
+      },
+      {
+        "name": "exactly five dollars adjusts to ten",
+        "overrides": {
+          "borrowerAgiCents": 2454000
+        },
+        "expectedMonthlyPaymentCents": 1000
+      },
+      {
+        "name": "spouse proration after cap",
+        "overrides": {
+          "borrowerAgiCents": 4000000,
+          "spouseAgiCents": 4000000,
+          "filingChoice": "married_filing_jointly",
+          "spouseEligibleDebtCents": 2000000
+        },
+        "expectedMonthlyPaymentCents": 12500
+      }
+    ],
+    "rapProjection": {
+      "overrides": {
+        "disbursementDate": "2025-01-01",
+        "fixedApr": 0.12,
+        "principalCents": 10000000,
+        "borrowerAgiCents": 0
+      },
+      "assumptions": {
+        "scenarioId": "loan-1",
+        "incomePath": [
+          {
+            "year": 2026,
+            "agiCents": 0
+          }
+        ],
+        "dependentPath": [
+          {
+            "year": 2026,
+            "dependents": 0
+          }
+        ],
+        "povertyGuidelineVersionByYear": {
+          "2026": "hhs-poverty-guidelines-2026"
+        },
+        "recertificationAssumption": "annual_on_time",
+        "paymentTimingAssumption": "on_time_monthly",
+        "extraPayments": "none"
+      },
+      "expected": {
+        "status": "projected",
+        "months": 360,
+        "totalPaidCents": 360000,
+        "principalMatchedCents": 360000,
+        "forgivenCents": 9640000,
+        "endingBalanceCents": 0
+      }
+    },
+    "ibrInterestProtection": [
+      {
+        "name": "month 36 subsidized",
+        "overrides": {
+          "principalCents": 5000000
+        },
+        "month": 36,
+        "unpaidInterestCents": 30000,
+        "accruedThisMonthCents": 25000,
+        "expectedCents": 25000
+      },
+      {
+        "name": "month 37 no protection",
+        "overrides": {
+          "principalCents": 5000000
+        },
+        "month": 37,
+        "unpaidInterestCents": 30000,
+        "accruedThisMonthCents": 25000,
+        "expectedCents": 0
+      },
+      {
+        "name": "half subsidized consolidation",
+        "overrides": {
+          "type": "direct_consolidation",
+          "principalCents": 2000000,
+          "subsidizedConsolidationPortionCents": 1000000
+        },
+        "month": 1,
+        "unpaidInterestCents": 5000,
+        "accruedThisMonthCents": 10000,
+        "expectedCents": 2500
+      }
+    ]
+  }
 }

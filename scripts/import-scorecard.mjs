@@ -2,6 +2,12 @@ import { createHash } from 'node:crypto'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 
+import { schoolRecordSchema } from '../src/lib/scorecard/schema.ts'
+
+if(process.argv[2]==='--csv'){
+  process.argv.splice(2,1)
+  await import('./import-scorecard-csv.mjs')
+}else{
 const apiKey=process.env.COLLEGE_SCORECARD_API_KEY
 const output=resolve(process.argv[2]??'src/data/scorecard/generated-snapshot.json')
 if(!apiKey) throw new Error('COLLEGE_SCORECARD_API_KEY is required for development-time ingestion')
@@ -18,7 +24,8 @@ while(results.length<total){
 const control=(value)=>value===1?'public':value===2?'private_nonprofit':value===3?'private_for_profit':'unknown'
 const nullable=(value)=>typeof value==='number'&&Number.isFinite(value)?value:null
 const records=results.map((row)=>{const prefix=row['school.ownership']===1?'latest.cost.net_price.public.by_income_level.':'latest.cost.net_price.private.by_income_level.';return {unitId:row.id,name:row['school.name'],state:row['school.state'],control:control(row['school.ownership']),costOfAttendance:nullable(row['latest.cost.attendance.academic_year']),tuitionInState:nullable(row['latest.cost.tuition.in_state']),tuitionOutOfState:nullable(row['latest.cost.tuition.out_of_state']),averageNetPrice:nullable(row['latest.cost.avg_net_price.overall']),averageNetPriceByIncome:Object.fromEntries(incomeKeys.map((key)=>[key,nullable(row[`${prefix}${key}`])])),graduationRate:nullable(row['latest.completion.rate_suppressed.overall']),medianFederalDebtAtGraduation:nullable(row['latest.aid.median_debt.completers.overall']),earnings:row['latest.earnings.10_yrs_after_entry.median']==null?[]:[{label:'Median earnings 10 years after entry',yearsAfterEntry:10,value:row['latest.earnings.10_yrs_after_entry.median']}],fieldOfStudyEarnings:[],dataYear:'latest cohorts in selected Scorecard release'}})
-for(const record of records){if(!Number.isInteger(record.unitId)||record.unitId<=0||typeof record.name!=='string'||!/^[A-Z]{2}$/.test(record.state))throw new Error(`Malformed Scorecard record: ${JSON.stringify({unitId:record.unitId,name:record.name,state:record.state})}`)}
+for(const record of records)schoolRecordSchema.parse(record)
 const checksumSha256=createHash('sha256').update(JSON.stringify(records)).digest('hex')
 const snapshot={metadata:{source:'U.S. Department of Education College Scorecard API',sourceUrl:'https://api.data.gov/ed/collegescorecard/v1/schools.json',retrievalDate:new Date().toISOString().slice(0,10),scorecardDataYear:process.env.COLLEGE_SCORECARD_DATA_YEAR??'latest mixed cohorts',snapshotVersion:process.env.COLLEGE_SCORECARD_SNAPSHOT_VERSION??'generated-full',datasetKind:'full_snapshot',recordCount:records.length,checksumSha256},records}
 await mkdir(dirname(output),{recursive:true});await writeFile(output,`${JSON.stringify(snapshot,null,2)}\n`,'utf8');console.log(`Wrote ${records.length} validated Scorecard records to ${output}`)
+}

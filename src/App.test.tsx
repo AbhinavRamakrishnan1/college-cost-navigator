@@ -22,9 +22,9 @@ describe('application shell', () => {
     expect(screen.getByRole('navigation', { name: 'Mobile' })).toBeInTheDocument()
   })
 
-  it('shows the independent-student unsupported state', () => {
+  it('shows the independent-student unsupported state', async () => {
     renderRoute('/profile')
-    expect(screen.getByRole('heading', { name: 'Independent students' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Independent students' })).toBeInTheDocument()
     expect(screen.getByText(/unsupported—not calculated/i)).toBeInTheDocument()
   })
 })

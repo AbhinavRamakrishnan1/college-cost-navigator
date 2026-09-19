@@ -16,7 +16,15 @@ export const loanScenarioSchema=z.object({
 })
 const pathEntrySchema=z.object({year:z.number().int().min(2026),agiCents:z.number().int().nonnegative()})
 const dependentEntrySchema=z.object({year:z.number().int().min(2026),dependents:z.number().int().nonnegative()})
+export const spouseDebtProjectionSchema=z.discriminatedUnion('kind',[
+  z.object({kind:z.literal('constant'),amountCents:z.number().int().nonnegative()}),
+  z.object({kind:z.literal('annual_path'),path:z.array(z.object({year:z.number().int().min(2026),amountCents:z.number().int().nonnegative()})).min(1)}),
+]).superRefine((value,context)=>{
+  if(value.kind==='annual_path'&&value.path.some((entry,index)=>index>0&&entry.year<=value.path[index-1].year))context.addIssue({code:'custom',message:'Spouse debt years must be unique and increasing.'})
+})
 export const projectionAssumptionsSchema=z.object({
+  // Optional for old records: absence deliberately blocks joint RAP projections, not current payments.
+  spouseDebtProjection:spouseDebtProjectionSchema.optional(),
   scenarioId:z.string().min(1),incomePath:z.array(pathEntrySchema).min(1),dependentPath:z.array(dependentEntrySchema).min(1),
   povertyGuidelineVersionByYear:z.record(z.string(),z.string()),recertificationAssumption:z.literal('annual_on_time'),
   paymentTimingAssumption:z.literal('on_time_monthly'),extraPayments:z.union([z.literal('none'),z.array(z.object({month:z.number().int().positive(),amountCents:z.number().int().positive()}))]),

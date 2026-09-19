@@ -12,6 +12,10 @@ dist
 dist-ssr
 test-results
 playwright-report
+.scorecard-cache
+.env
+.env.*
+.vercel
 *.local
 
 # Editor directories and files

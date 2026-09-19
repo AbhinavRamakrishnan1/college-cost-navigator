@@ -6,8 +6,12 @@ import { loanScenarioSchema,projectionAssumptionsSchema } from '../repayment/sch
 
 export const navigatorBackupSchema=z.object({
   format:z.literal(BACKUP_FORMAT),formatVersion:z.literal(BACKUP_FORMAT_VERSION),databaseVersion:z.literal(DATABASE_VERSION),exportedAt:z.string().datetime(),
-  data:z.object({profiles:z.array(householdProfileSchema),savedSchools:z.array(savedSchoolSchema),loanScenarios:z.array(loanScenarioSchema),projectionAssumptions:z.array(projectionAssumptionsSchema)}),
+  data:z.object({profiles:z.array(householdProfileSchema).max(1),savedSchools:z.array(savedSchoolSchema).max(10),loanScenarios:z.array(loanScenarioSchema),projectionAssumptions:z.array(projectionAssumptionsSchema)}),
 }).superRefine((backup,context)=>{
+  for(const [rows,key] of [[backup.data.savedSchools,'unitId'],[backup.data.loanScenarios,'id'],[backup.data.projectionAssumptions,'scenarioId']] as const){
+    const identifiers=rows.map(row=>(row as unknown as Record<string,unknown>)[key])
+    if(new Set(identifiers).size!==identifiers.length)context.addIssue({code:'custom',message:'Duplicate record identifiers in backup.'})
+  }
   const scenarioIds=new Set(backup.data.loanScenarios.map((scenario)=>scenario.id))
   const assumptionIds=new Set(backup.data.projectionAssumptions.map((assumption)=>assumption.scenarioId))
   for(const scenarioId of scenarioIds)if(!assumptionIds.has(scenarioId))context.addIssue({code:'custom',path:['data','projectionAssumptions'],message:`Missing assumptions for scenario ${scenarioId}`})
@@ -16,6 +20,7 @@ export const navigatorBackupSchema=z.object({
 
 export type NavigatorBackup=z.infer<typeof navigatorBackupSchema>
 export type LocalDataSummary={profiles:number;savedSchools:number;loanScenarios:number;projectionAssumptions:number;total:number}
+// Only the shipped v4 backup format is supported; no earlier backup format was released.
 export const parseNavigatorBackup=(value:unknown):NavigatorBackup=>navigatorBackupSchema.parse(value)
 
 export class BackupService{

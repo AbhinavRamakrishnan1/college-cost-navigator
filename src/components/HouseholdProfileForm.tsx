@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { EMPTY_CALCULATION_PROFILE, FICTIONAL_DEMO_PROFILE } from '../lib/storage/demoProfile'
-import { navigatorDatabase } from '../lib/storage/database'
+
 import { householdRepository } from '../lib/storage/repositories'
 import type { CalculationProfile, HouseholdProfileInput } from '../lib/storage/schema'
 
@@ -18,7 +18,7 @@ const benefits = [['EITC','EITC'],['HOUSING_ASSISTANCE','Federal housing assista
 
 const money = (value: string) => value === '' ? 0 : Number(value)
 export function HouseholdProfileForm() {
-  const savedProfile = useLiveQuery(() => navigatorDatabase.profiles.get('current-household'))
+  const savedProfile = useLiveQuery(() => householdRepository.load())
   const [draft,setDraft] = useState<HouseholdProfileInput>(EMPTY_PROFILE)
   const [status,setStatus] = useState('No profile loaded.')
   const setField = <K extends keyof HouseholdProfileInput>(key:K,value:HouseholdProfileInput[K]) => setDraft((current) => ({...current,[key]:value,isFictionalDemo:false}))
@@ -26,8 +26,8 @@ export function HouseholdProfileForm() {
   const setIncome = (person:'parentIncome'|'studentIncome',key:string,value:number) => setCalc((c) => ({...c,[person]:{...c[person],[key]:value}}))
   const setAsset = (person:'parentAssets'|'studentAssets',key:string,value:number) => setCalc((c) => ({...c,[person]:{...c[person]!,[key]:value}}))
   const loadDemo = () => { setDraft(structuredClone(FICTIONAL_DEMO_PROFILE)); setStatus('Fictional demo loaded. Choose Save profile to keep it in this browser.') }
-  const loadSaved = async () => { const profile=await householdRepository.load(); if(!profile){setStatus('No saved profile found in this browser.');return} const {id:_id,updatedAt:_updatedAt,schemaVersion:_schemaVersion,...input}=profile; setDraft(input); setStatus('Saved profile loaded from this browser.') }
-  const save = async (event:FormEvent) => { event.preventDefault(); try{await householdRepository.save(draft);setStatus('Profile saved locally in this browser.')}catch{setStatus('Check the highlighted fields before saving.')} }
+  const loadSaved = async () => { try{const profile=await householdRepository.load(); if(!profile){setStatus('No saved profile found in this browser.');return} const {id:_id,updatedAt:_updatedAt,schemaVersion:_schemaVersion,...input}=profile; setDraft(input); setStatus('Saved profile loaded from this browser.')}catch{setStatus('Saved data is unavailable or invalid. Check browser storage or restore a valid backup.')} }
+  const save = async (event:FormEvent) => { event.preventDefault(); try{await householdRepository.save(draft);setStatus('Profile saved locally in this browser.')}catch{setStatus('Unable to save. Review the required fields and browser storage permissions.')} }
   const calculation=draft.calculation
 
   return <section className="card p-6 sm:p-8">

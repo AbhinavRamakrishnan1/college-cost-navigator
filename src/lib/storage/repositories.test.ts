@@ -18,6 +18,13 @@ function createRepository() {
 }
 
 describe('local household repository', () => {
+  it('does not hide corrupt records that lack sort-index fields',async()=>{
+    createRepository()
+    await database!.savedSchools.put({unitId:123} as never)
+    await expect(new SavedSchoolRepository(database).list()).rejects.toThrow('Local data is invalid')
+    await database!.loanScenarios.put({id:'corrupt'} as never)
+    await expect(new LoanScenarioRepository(database).list()).rejects.toThrow('Local data is invalid')
+  })
   it('defines a valid, clearly fictional dependent demo', () => {
     const parsed = householdProfileSchema.omit({ id:true,updatedAt:true,schemaVersion:true }).parse(FICTIONAL_DEMO_PROFILE)
     expect(parsed).toMatchObject({ studentName: 'Maya Rivera', dependencyStatus: 'dependent', isFictionalDemo: true })
