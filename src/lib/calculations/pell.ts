@@ -1,16 +1,21 @@
 import poverty from '../../data/policy/hhs-poverty-guidelines-2024-pell.json'
 import { saiWhole } from './sai'
 import type { PellInputs, PellResult } from './types'
+import { residenceSchema } from '../residence'
 
 export const MAX_PELL = 7395, MIN_PELL = 740, PELL_SAI_CEILING = 14790
 export const nearestFive = (value: number) => Math.round(value / 5) * 5
 export function pellPovertyGuideline(familySize: number, state: string): number {
   if (!Number.isInteger(familySize) || familySize < 1) throw new RangeError('Family size must be a positive integer')
-  const region = state.trim().toLowerCase() === 'alaska' ? poverty.regions.alaska : state.trim().toLowerCase() === 'hawaii' ? poverty.regions.hawaii : poverty.regions.contiguous48_dc_other_for_fafsa
+  const code=residenceSchema.parse(state)
+  const region = code === 'AK' ? poverty.regions.alaska : code === 'HI' ? poverty.regions.hawaii : poverty.regions.contiguous48_dc_other_for_fafsa
   if (familySize <= 8) return region[String(familySize) as keyof typeof region]
   return region['8'] + (familySize - 8) * region.eachAdditional
 }
 export function calculatePell(input: PellInputs): PellResult {
+  residenceSchema.parse(input.parentState)
+  // V1 cannot certify this statutory exception, at any SAI.
+  if (input.possibleSpecialRuleDependent) return { status: 'unsupported', reason: 'special_rule_not_modeled', specialRuleNotModeled: true }
   if (input.sai >= PELL_SAI_CEILING && input.possibleSpecialRuleDependent) return { status: 'unsupported', reason: 'special_rule_not_modeled', specialRuleNotModeled: true }
   if (input.sai >= PELL_SAI_CEILING) return { status: 'ineligible', reason: 'sai_threshold' }
   const base = pellPovertyGuideline(input.familySize, input.parentState)
@@ -18,7 +23,8 @@ export function calculatePell(input: PellInputs): PellResult {
   const maxThreshold = saiWhole(base * (input.parentSingleParent ? 2.25 : 1.75))
   const maxEligible = input.qualifyingParentNonfiler || (agi > 0 && agi <= maxThreshold)
   if (maxEligible) return { status: 'eligible', eligibility: 'maximum', scheduledAward: Math.min(MAX_PELL, input.pellCoa), label: 'Scheduled Award estimate' }
-  const raw = MAX_PELL - input.sai
+  // 20 USC 1070a(b)(1)(B): negative SAI is zero for this subtraction only.
+  const raw = MAX_PELL - Math.max(input.sai, 0)
   if (raw >= MIN_PELL) {
     const rounded = nearestFive(raw)
     return { status: 'eligible', eligibility: 'calculated', rawCalculatedPell: raw, roundedCalculatedPell: rounded, scheduledAward: Math.min(rounded, input.pellCoa), label: 'Scheduled Award estimate' }

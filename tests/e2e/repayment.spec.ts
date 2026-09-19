@@ -20,6 +20,7 @@ test('creates post-cutoff and legacy Direct Loan scenarios, persists, edits, and
   await page.getByLabel('Scenario name').fill('Legacy IBR loan')
   await page.getByLabel('First disbursement date').fill('2025-06-30')
   await page.getByLabel('Actual fixed APR (%) — optional').fill('6.5')
+  await page.getByLabel('Direct borrowing on or after July 1, 2026').selectOption('none')
   await page.getByLabel('Verified legacy IBR cohort').selectOption('new')
   await page.getByLabel('Stored IBR 10-year entry cap').fill('250')
   await page.getByLabel('Eligible balance at IBR entry').fill('23456.78')

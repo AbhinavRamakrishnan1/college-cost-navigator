@@ -913,3 +913,49 @@ Tiered Standard term selector returns only 120/180/240/300 months
 "status": "FROZEN_FOR_V1_IMPLEMENTATION_WITH_SCOPE_GUARDS"
 }
 Any policy correction changes the version and adds an entry to /policy-changes.​
+
+```
+
+## v1.0.1 dated correctness addendum — 2026-09-19
+
+This addendum supersedes only the identified v1.0.0 statements below. The original
+text above is retained as history. Frozen policy JSON and its baseline version are
+unchanged. The user explicitly approved the statutory D3 correction on this date.
+
+### Calculated Pell: negative SAI (supersedes §4.4 subtraction)
+
+20 U.S.C. §1070a(b)(1)(B)(ii) treats a negative SAI as zero solely for Calculated
+Pell. Do not modify the actual Formula A SAI, which can remain −1,500.
+
+1. pellSai = max(calculatedSAI, 0).
+2. rawCalculatedPell = publishedMaxPell − pellSai.
+3. Compare the raw result with the applicable minimum ($740 for 2026–27).
+4. If eligible, round that result to the nearest $5.
+5. Scheduled Award = min(roundedCalculatedPell, Pell COA). Do not round the COA.
+
+This is statutory SAI treatment, not an arbitrary final maximum clamp. The ordinary
+Scheduled Award consequently cannot exceed $7,395. Max Pell, Min Pell, the SAI
+ceiling, and Special Rule remain separate eligibility rules. Possible Special Rule
+qualification remains verification-required at any SAI; v1 does not certify it.
+
+Sources:
+- https://uscode.house.gov/view.xhtml?edition=prelim&num=0&req=granuleid%3AUSC-prelim-title20-section1070a
+- https://fsapartners.ed.gov/knowledge-center/library/dear-colleague-letters/2026-01-30/2026-27-federal-pell-grant-maximum-and-minimum-award-amounts
+- https://fsapartners.ed.gov/knowledge-center/fsa-handbook/2026-2027/vol7/ch2-calculating-pell-grants
+- https://fsapartners.ed.gov/knowledge-center/fsa-handbook/2026-2027/vol7/ch1-student-eligibility-pell-grants
+
+### Application-boundary and eligibility clarifications
+
+Canonical household facts determine Max Pell indicators and asset-reporting flags.
+Unknown answers are not zeros or false. Both tax returns must survive editing;
+asset-exempt profiles need not supply asset objects. Residence uses validated
+canonical state/territory codes or explicit FOREIGN/UNKNOWN locations; malformed
+strings are not silently interpreted as the Other table.
+
+Repayment applicability is resolved before arithmetic under the dated table in
+[v1.0.1-policy-decisions.md](v1.0.1-policy-decisions.md). This supplements §§5.4,
+5.5, 6.4 and 7 with consolidation transition dates and borrower-wide facts. Missing
+facts return cannot-determine; independent saved scenarios are not a portfolio.
+Legacy Standard is distinguished informationally and is not newly simulated.
+Existing RAP/IBR arithmetic, spouse-debt projection rules, rates and forgiveness
+crediting are unchanged. Separate unresolved projection questions are not amended.

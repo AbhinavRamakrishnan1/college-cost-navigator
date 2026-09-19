@@ -2,6 +2,8 @@ import Decimal from 'decimal.js'
 import { selectFederalLoanRates,selectPovertyGuidelines } from '../policy/selectors'
 import type { DirectLoanType,LoanScenario,ProjectionAssumptions } from './schema'
 import { spouseDebtProjectionSchema } from './schema'
+import { borrowerIbrEligibility, consolidationEligibility, tieredEligibility } from './eligibility'
+import { residenceSchema } from '../residence'
 
 export const POLICY_VERSION_UNAVAILABLE='POLICY_VERSION_UNAVAILABLE' as const
 const cents=(value:Decimal.Value)=>new Decimal(value).toDecimalPlaces(0,Decimal.ROUND_HALF_UP).toNumber()
@@ -18,6 +20,8 @@ export function selectLoanRate(loan:Pick<LoanScenario,'type'|'disbursementDate'|
 export function amortizedPaymentCents(balanceCents:number,apr:number,months:number){if(balanceCents<=0)return 0;if(apr===0)return cents(new Decimal(balanceCents).div(months));const rate=new Decimal(apr).div(12);return cents(new Decimal(balanceCents).mul(rate).div(new Decimal(1).minus(new Decimal(1).plus(rate).pow(-months))))}
 export function tieredStandardTermMonths(totalDirectBalanceCents:number){if(totalDirectBalanceCents<2_500_000)return 120;if(totalDirectBalanceCents<5_000_000)return 180;if(totalDirectBalanceCents<10_000_000)return 240;return 300}
 export function calculateTieredStandard(loans:LoanScenario[]){
+  if(loans.length===0)return {status:'unavailable' as const,reason:'Cannot determine eligibility: no loans supplied.'}
+  for(const loan of loans){const eligibility=tieredEligibility(loan);if(!eligibility.eligible)return {status:'unavailable' as const,reason:eligibility.reason}}
   const balance=loans.reduce((sum,loan)=>sum+totalBalance(loan),0),termMonths=tieredStandardTermMonths(balance),rates=loans.map(selectLoanRate)
   if(rates.some((rate)=>rate.status==='unavailable'))return {status:'unavailable' as const,reason:POLICY_VERSION_UNAVAILABLE,termMonths}
   const raw=loans.reduce((sum,loan,index)=>sum+amortizedPaymentCents(totalBalance(loan),(rates[index] as Extract<RateResult,{status:'available'}>).apr,termMonths),0)
@@ -28,10 +32,8 @@ export function calculateTieredStandard(loans:LoanScenario[]){
 function rapAnnualBase(agiCents:number){const dollars=new Decimal(agiCents).div(100);if(dollars.lte(10_000))return new Decimal(12_000);const percent=dollars.lte(20_000)?1:dollars.lte(30_000)?2:dollars.lte(40_000)?3:dollars.lte(50_000)?4:dollars.lte(60_000)?5:dollars.lte(70_000)?6:dollars.lte(80_000)?7:dollars.lte(90_000)?8:dollars.lte(100_000)?9:10;return new Decimal(agiCents).mul(percent).div(100)}
 export function rapAnnualBaseCents(agiCents:number){return rapAnnualBase(agiCents).toNumber()}
 export function rapEligibility(loan:LoanScenario){
-  if(loan.type==='direct_consolidation'&&!loan.parentPlusConsolidationHistory)return {eligible:false as const,reason:'Consolidation history is required to determine eligibility.'}
   if(loan.type==='direct_plus_parent')return {eligible:false as const,reason:'Direct Parent PLUS is not RAP-eligible.'}
-  if(loan.type==='direct_consolidation'&&loan.parentPlusConsolidationHistory?.repaidParentPlus&&!loan.parentPlusConsolidationHistory.hadQualifyingIdrPaymentBetween2025_07_04And2028_06_30)return {eligible:false as const,reason:'Parent-PLUS-derived consolidation lacks the required qualifying IDR payment history.'}
-  return {eligible:true as const}
+  return consolidationEligibility(loan)
 }
 export function calculateRapPayment(loan:LoanScenario,agiCents= includedSpouse(loan)?loan.borrowerAgiCents+loan.spouseAgiCents:loan.borrowerAgiCents,dependents=loan.rapDependents){
   const eligibility=rapEligibility(loan);if(!eligibility.eligible)return {status:'unavailable' as const,reason:eligibility.reason}
@@ -40,13 +42,14 @@ export function calculateRapPayment(loan:LoanScenario,agiCents= includedSpouse(l
   return {status:'eligible' as const,monthlyPaymentCents:cents(Decimal.max(1000,payment)),agiCents,spouseProrationApplied:includedSpouse(loan),forgivenessMonths:360}
 }
 
-const stateRegion=(state:string)=>{const value=state.trim().toLowerCase();return value==='alaska'||value==='ak'?'alaska':value==='hawaii'||value==='hi'?'hawaii':'contiguous48_dc'}
+const stateRegion=(state:string)=>{const value=residenceSchema.parse(state);return value==='AK'?'alaska':value==='HI'?'hawaii':'contiguous48_dc'}
 export function povertyGuidelineCents(year:number,state:string,familySize:number){const selected=selectPovertyGuidelines(year,'idr');if(!selected.ok)return {status:'unavailable' as const,reason:POLICY_VERSION_UNAVAILABLE};const table=selected.value.regions[stateRegion(state)],size=Math.max(1,familySize),dollars=size<=8?table[String(size)]:table['8']+(size-8)*table.eachAdditional;return {status:'available' as const,amountCents:dollars*100,version:selected.value.id}}
 export function ibrEligibility(loan:LoanScenario){
-  if(loan.type==='direct_consolidation'&&!loan.parentPlusConsolidationHistory)return {eligible:false as const,reason:'Consolidation history is required to determine eligibility.'}
   if(loan.disbursementDate>='2026-07-01')return {eligible:false as const,reason:'IBR is unavailable for Direct Loans made on or after July 1, 2026.'}
   if(loan.repayePaymentsSince2024>=60)return {eligible:false as const,reason:'60 or more qualifying REPAYE payments block new IBR enrollment.'}
-  if(loan.type==='direct_plus_parent'||(loan.type==='direct_consolidation'&&loan.parentPlusConsolidationHistory?.repaidParentPlus))return {eligible:false as const,reason:'This Parent PLUS loan type is not eligible for IBR.'}
+  if(loan.type==='direct_plus_parent')return {eligible:false as const,reason:'Direct Parent PLUS is not eligible for IBR.'}
+  const consolidation=consolidationEligibility(loan);if(!consolidation.eligible)return consolidation
+  const borrower=borrowerIbrEligibility(loan);if(!borrower.eligible)return borrower
   if(!loan.ibrEnrollmentSnapshot)return {eligible:false as const,reason:'A verified IBR cohort and entry-payment cap are required.'}
   return {eligible:true as const,snapshot:loan.ibrEnrollmentSnapshot}
 }

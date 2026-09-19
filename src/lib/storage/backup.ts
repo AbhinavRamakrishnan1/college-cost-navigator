@@ -3,6 +3,7 @@ import type { NavigatorDatabase } from './database'
 import { navigatorDatabase } from './database'
 import { BACKUP_FORMAT,BACKUP_FORMAT_VERSION,DATABASE_VERSION,STORAGE_METADATA,householdProfileSchema,savedSchoolSchema } from './schema'
 import { loanScenarioSchema,projectionAssumptionsSchema } from '../repayment/schema'
+import { migrateLegacyProfile } from './migration'
 
 export const navigatorBackupSchema=z.object({
   format:z.literal(BACKUP_FORMAT),formatVersion:z.literal(BACKUP_FORMAT_VERSION),databaseVersion:z.literal(DATABASE_VERSION),exportedAt:z.string().datetime(),
@@ -20,8 +21,16 @@ export const navigatorBackupSchema=z.object({
 
 export type NavigatorBackup=z.infer<typeof navigatorBackupSchema>
 export type LocalDataSummary={profiles:number;savedSchools:number;loanScenarios:number;projectionAssumptions:number;total:number}
-// Only the shipped v4 backup format is supported; no earlier backup format was released.
-export const parseNavigatorBackup=(value:unknown):NavigatorBackup=>navigatorBackupSchema.parse(value)
+export const parseNavigatorBackup=(value:unknown):NavigatorBackup=>{
+  const old=z.object({format:z.literal(BACKUP_FORMAT),formatVersion:z.literal(4),databaseVersion:z.literal(4),data:z.object({profiles:z.array(z.record(z.string(),z.unknown()))})}).safeParse(value)
+  if(old.success){
+    const copy=structuredClone(value) as Record<string,unknown>
+    copy.formatVersion=5;copy.databaseVersion=5
+    copy.data={...(copy.data as Record<string,unknown>),profiles:old.data.data.profiles.map(migrateLegacyProfile)}
+    return navigatorBackupSchema.parse(copy)
+  }
+  return navigatorBackupSchema.parse(value)
+}
 
 export class BackupService{
   private readonly database:NavigatorDatabase

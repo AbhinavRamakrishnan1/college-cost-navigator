@@ -3,7 +3,7 @@ import vectors from '../../../docs/calculation-test-vectors-v1.0.json'
 import { calculateIbrPayment, calculateRapPayment, ibrInterestProtectionCents, loanScenarioSchema, projectRepayment, projectionAssumptionsSchema, rapAnnualBaseCents, tieredStandardTermMonths } from '.'
 
 const cases = vectors.repayment
-const loan = (overrides: object = {}, legacy = false) => loanScenarioSchema.parse({ ...(legacy ? cases.legacyDefaults : cases.defaults), ...overrides })
+const loan = (overrides: object = {}, legacy = false) => loanScenarioSchema.parse({ ...(legacy ? cases.legacyDefaults : cases.defaults), borrowingHistory:legacy?'none':'non_excepted', ...overrides })
 describe('canonical repayment fixture reconciliation', () => {
   it('uses the frozen contract version and validated complete defaults', () => {
     expect(cases.reconciliation.contractVersion).toBe(vectors.version)

@@ -18,7 +18,7 @@ export class HouseholdRepository {
   }
 
   async save(input: HouseholdProfileInput): Promise<HouseholdProfile> {
-    const profile = parseLocal(householdProfileSchema,{ ...input, id: CURRENT_PROFILE_ID, schemaVersion: 2, updatedAt: new Date().toISOString() })
+    const profile = parseLocal(householdProfileSchema,{ ...input, id: CURRENT_PROFILE_ID, schemaVersion: 3, updatedAt: new Date().toISOString() })
     await this.database.transaction('rw', this.database.profiles, this.database.metadata, async () => {
       await this.database.profiles.put(profile)
       await this.database.metadata.put(STORAGE_METADATA)

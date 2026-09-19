@@ -13,7 +13,7 @@ test('methodology details and policy history are accessible and dated', async ({
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
   await page.goto('/policy-changes')
   await expect(page.getByText('Unresolved / litigated', { exact: true })).toBeVisible()
-  await expect(page.locator('ol time')).toHaveCount(8)
+  await expect(page.locator('ol time')).toHaveCount(9)
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
 })
 

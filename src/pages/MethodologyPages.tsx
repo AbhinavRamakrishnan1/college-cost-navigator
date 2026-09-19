@@ -7,19 +7,20 @@ function SourceCallout({ id }: { id: string }) {
     <p>{source.agency}</p>
     <a className="font-bold text-moss-700 underline" href={source.url}>{source.title}</a>
     <p>{source.date}</p>
-    <p>Contract v{baseline.contractVersion} · source inventory verified {baseline.asOf}</p>
+    <p>{id==='pell-statute'?'Contract v1.0.1 addendum · verified 2026-09-19':`Contract v${baseline.contractVersion} · source inventory verified ${baseline.asOf}`}</p>
   </li>
 }
 
 export function MethodologyPage() {
   return <PageShell eyebrow="Methodology" title="How your estimates are calculated." intro="Plain-language explanations of the implemented methods, followed by technical details and dated primary sources. These are planning estimates, not aid offers or servicer quotes.">
     <p className="rounded-lg border border-line bg-gold-100 p-4 text-sm">Frozen calculation contract v{baseline.contractVersion} · verified <time dateTime={baseline.asOf}>{baseline.asOf}</time>. Policy status is not live. New rules require a reviewed version update.</p>
+    <p className="mt-4 text-sm">v1.0.1 dated corrections: September 19, 2026. Negative SAI is treated as zero only for Calculated Pell. Profile and repayment eligibility inputs now fail closed when required facts are unknown. The frozen policy JSON baseline is unchanged.</p>
     <nav className="card mt-6 p-6" aria-label="Methodology sections"><h2 className="font-serif text-2xl font-bold">Find a calculation</h2><ul className="mt-4 grid gap-3 sm:grid-cols-2">{methodologySections.map(section => <li key={section.id}><a className="text-moss-700 underline" href={`#${section.id}`}>{section.title}</a></li>)}</ul></nav>
     <div className="mt-6 grid gap-6">{methodologySections.map(section => <section className="card scroll-mt-24 p-6 sm:p-8" id={section.id} key={section.id} aria-labelledby={`${section.id}-heading`}>
       <h2 className="font-serif text-2xl font-bold" id={`${section.id}-heading`}>{section.title}</h2>
       <p className="mt-4 max-w-3xl leading-7">{section.summary}</p>
       <details className="mt-4 max-w-3xl"><summary className="cursor-pointer font-bold text-moss-700">Calculation details and limitations</summary><div className="mt-3 space-y-4 leading-7">{section.details.map(detail => <p key={detail}>{detail}</p>)}</div></details>
-      {section.sources.length ? <><h3 className="mt-5 font-bold">Primary sources and versions</h3><ul className="mt-3 grid gap-3 sm:grid-cols-2">{section.sources.map(id => <SourceCallout key={id} id={id}/>)}</ul></> : <p className="mt-4 text-sm">Implementation reference: local storage schema v4 and frozen contract §§0, 9, 11. This is an app architecture statement, not a federal formula.</p>}
+      {section.sources.length ? <><h3 className="mt-5 font-bold">Primary sources and versions</h3><ul className="mt-3 grid gap-3 sm:grid-cols-2">{section.sources.map(id => <SourceCallout key={id} id={id}/>)}</ul></> : <p className="mt-4 text-sm">Implementation reference: local storage schema v5 and frozen contract §§0, 9, 11. This is an app architecture statement, not a federal formula.</p>}
       {section.id === 'scorecard' ? <p className="mt-4 break-all text-xs">Snapshot SHA-256: {schoolMetadata.checksumSha256}</p> : null}
     </section>)}</div>
   </PageShell>

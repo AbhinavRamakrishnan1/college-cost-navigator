@@ -1,7 +1,7 @@
 {
   "name": "college-cost-navigator",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": { "node": "24.x" },
   "type": "module",
   "scripts": {
@@ -40,6 +40,6 @@
     "oxlint": "^1.75.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.0",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }

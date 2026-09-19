@@ -1,0 +1,23 @@
+import { describe,it,expect } from 'vitest'
+import vectors from '../../../docs/calculation-test-vectors-v1.0.json'
+import { loanScenarioSchema } from './schema'
+import { calculateIbrPayment,calculateRapPayment,calculateTieredStandard } from './core'
+import { consolidationEligibility,tieredEligibility } from './eligibility'
+
+const legacy=(overrides:object={})=>loanScenarioSchema.parse({...vectors.repayment.legacyDefaults,borrowingHistory:'none',...overrides})
+const parent=(overrides:object={})=>legacy({type:'direct_consolidation',disbursementDate:'2024-01-01',parentPlusConsolidationHistory:{repaidParentPlus:true,hadQualifyingIdrPaymentBetween2025_07_04And2028_06_30:true,qualifyingPaymentDate:'2025-08-01'},...overrides})
+describe('D8-D11 dated eligibility',()=>{
+  it('D8 permits a qualifying legacy Parent-PLUS-derived consolidation',()=>expect(calculateIbrPayment(parent())).toMatchObject({status:'eligible'}))
+  it('D8 blocks direct Parent PLUS and excepted consolidations',()=>{expect(calculateIbrPayment(legacy({type:'direct_plus_parent'})).status).toBe('unavailable');expect(calculateRapPayment(parent({parentPlusConsolidationHistory:{repaidParentPlus:true,hadQualifyingIdrPaymentBetween2025_07_04And2028_06_30:false}})).status).toBe('unavailable')})
+  it.each(['2025-06-30','2025-07-01','2025-07-02'])('D9 applies consolidation cutoff %s',disbursementDate=>{const loan=parent({disbursementDate});expect(calculateRapPayment(loan).status).toBe(disbursementDate<'2025-07-01'?'eligible':'unavailable')})
+  it('D9 ends the transition on July 1, 2028, not June 30',()=>{const loan=parent({disbursementDate:'2025-07-01'});expect(consolidationEligibility(loan,'2028-06-30').eligible).toBe(false);expect(consolidationEligibility(loan,'2028-07-01').eligible).toBe(true)})
+  it('D9 applies the subsequent-borrowing transition exception independently of IBR restrictions',()=>{const loan=parent({disbursementDate:'2025-07-01',borrowingHistory:'non_excepted'});expect(calculateRapPayment(loan).status).toBe('eligible');expect(calculateIbrPayment(loan).status).toBe('unavailable')})
+  it.each(['2025-07-03','2028-07-01','2024-01-01'])('rejects payment date %s outside verified evidence',qualifyingPaymentDate=>expect(consolidationEligibility(parent({parentPlusConsolidationHistory:{repaidParentPlus:true,hadQualifyingIdrPaymentBetween2025_07_04And2028_06_30:true,qualifyingPaymentDate}})).eligible).toBe(false))
+  it.each(['2025-07-04','2028-06-30'])('accepts payment-window endpoint %s when assessed afterward',qualifyingPaymentDate=>expect(consolidationEligibility(parent({parentPlusConsolidationHistory:{repaidParentPlus:true,hadQualifyingIdrPaymentBetween2025_07_04And2028_06_30:true,qualifyingPaymentDate}}),'2028-07-01').eligible).toBe(true))
+  it('D8-D9 require a date rather than an old boolean alone',()=>expect(calculateRapPayment(parent({parentPlusConsolidationHistory:{repaidParentPlus:true,hadQualifyingIdrPaymentBetween2025_07_04And2028_06_30:true}}))).toMatchObject({status:'unavailable',reason:expect.stringContaining('Cannot determine')}))
+  it('D10 requires borrower-wide history and preserves the excepted-only carveout',()=>{expect(calculateIbrPayment(legacy({borrowingHistory:undefined}))).toMatchObject({status:'unavailable',reason:expect.stringContaining('Cannot determine')});expect(calculateIbrPayment(legacy({borrowingHistory:'non_excepted'})).status).toBe('unavailable');expect(calculateIbrPayment(legacy({borrowingHistory:'excepted_only'})).status).toBe('eligible')})
+  it.each(['2026-06-30','2026-07-01','2026-07-02'])('IBR/Tiered cutoff %s',disbursementDate=>{const loan=legacy({disbursementDate,borrowingHistory:disbursementDate<'2026-07-01'?'none':'non_excepted'});expect(calculateIbrPayment(loan).status).toBe(disbursementDate<'2026-07-01'?'eligible':'unavailable');expect(tieredEligibility(loan).eligible).toBe(disbursementDate>='2026-07-01')})
+  it('D11 does not offer Tiered for a legacy-only 30k loan',()=>expect(calculateTieredStandard([legacy({principalCents:3000000})])).toMatchObject({status:'unavailable',reason:expect.stringContaining('Legacy Standard')}))
+  it('D11 missing history and contradictions fail closed',()=>{expect(tieredEligibility(legacy({borrowingHistory:undefined}))).toMatchObject({eligible:false,reason:expect.stringContaining('Cannot determine')});expect(tieredEligibility(legacy({disbursementDate:'2026-07-01',borrowingHistory:'none'}))).toMatchObject({eligible:false})})
+  it('D11 retains amortization for eligible mixed borrowers',()=>expect(calculateTieredStandard([legacy({principalCents:3000000,borrowingHistory:'non_excepted'})])).toMatchObject({status:'eligible',termMonths:180,monthlyPaymentCents:26133}))
+})

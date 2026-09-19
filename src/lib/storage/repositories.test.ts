@@ -56,7 +56,7 @@ describe('local household repository', () => {
     oldDatabase.close()
     database=new NavigatorDatabase(name)
     const migrated=await new HouseholdRepository(database).load()
-    expect(migrated).toMatchObject({studentName:'Legacy Student',schemaVersion:2,calculation:null})
+    expect(migrated).toMatchObject({studentName:'Legacy Student',schemaVersion:3,calculation:null})
     expect(calculateProfileAid(migrated!)).toEqual({status:'incomplete',missing:['financial inputs']})
   })
 
@@ -70,7 +70,7 @@ describe('local household repository', () => {
     oldDatabase.version(2).stores({profiles:'&id, updatedAt',metadata:'&id'})
     const now=new Date().toISOString(),stored={...FICTIONAL_DEMO_PROFILE,id:'current-household',schemaVersion:2,updatedAt:now}
     await oldDatabase.table('profiles').put(stored);oldDatabase.close();database=new NavigatorDatabase(name)
-    await expect(new HouseholdRepository(database).load()).resolves.toEqual(stored)
+    await expect(new HouseholdRepository(database).load()).resolves.toMatchObject({schemaVersion:3,legacyProfile:stored})
     await expect(database.savedSchools.count()).resolves.toBe(0)
   })
 
@@ -78,7 +78,7 @@ describe('local household repository', () => {
     const name=`navigator-v3-migration-${crypto.randomUUID()}`,oldDatabase=new Dexie(name),now=new Date().toISOString()
     oldDatabase.version(3).stores({profiles:'&id, updatedAt',metadata:'&id',savedSchools:'&unitId, addedAt'})
     const stored={...FICTIONAL_DEMO_PROFILE,id:'current-household',schemaVersion:2,updatedAt:now};await oldDatabase.table('profiles').put(stored);await oldDatabase.table('savedSchools').put({unitId:204796,snapshotVersion:'development-1.0.0',addedAt:now});oldDatabase.close()
-    database=new NavigatorDatabase(name);await expect(new HouseholdRepository(database).load()).resolves.toEqual(stored);await expect(new SavedSchoolRepository(database).list()).resolves.toHaveLength(1);await expect(database.loanScenarios.count()).resolves.toBe(0);await expect(database.projectionAssumptions.count()).resolves.toBe(0)
+    database=new NavigatorDatabase(name);await expect(new HouseholdRepository(database).load()).resolves.toMatchObject({schemaVersion:3,legacyProfile:stored});await expect(new SavedSchoolRepository(database).list()).resolves.toHaveLength(1);await expect(database.loanScenarios.count()).resolves.toBe(0);await expect(database.projectionAssumptions.count()).resolves.toBe(0)
   })
 
   it('saves, reloads, edits, and deletes loan scenarios with assumptions without fetch',async()=>{

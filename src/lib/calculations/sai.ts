@@ -73,11 +73,12 @@ export function tableA5ParentContribution(paai: number): number {
   return saiWhole(D(11870).plus(D(paai).minus(43900).times('.47')))
 }
 export const boundSai = (sai: number) => Math.max(-1500, Math.min(999999, saiWhole(sai)))
+export const nonfilerSai = ():SaiResult => ({status:'calculated',sai:-1500,maxPellIndicator:1,ordinaryFormulaRun:false})
 
 export function calculateDependentSai(input: DependentSaiInputs): SaiResult {
   if (input.dependencyStatus !== 'dependent') return { status: 'unsupported', reason: 'unsupported_dependency_status' }
   const indicator = input.maxPellIndicator ?? 0
-  if (indicator === 1) return { status: 'calculated', sai: -1500, maxPellIndicator: 1, ordinaryFormulaRun: false }
+  if (indicator === 1) return nonfilerSai()
   if (!Number.isInteger(input.familySize) || input.familySize < 2) return { status: 'incomplete', missing: ['valid family size of at least 2'] }
   const exempt = isAssetReportingExempt(input.assetExemption)
   const missing = [] as string[]
