@@ -1,19 +1,18 @@
 import { useState, type FormEvent } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { EMPTY_CALCULATION_PROFILE, FICTIONAL_DEMO_PROFILE } from '../lib/storage/demoProfile'
+import { EMPTY_CALCULATION_PROFILE,EMPTY_HOUSEHOLD_PROFILE, FICTIONAL_DEMO_PROFILE } from '../lib/storage/demoProfile'
 import { householdRepository } from '../lib/storage/repositories'
 import type { CalculationDraft, HouseholdProfileInput } from '../lib/storage/schema'
 import { residences } from '../lib/residence'
 
 type BusinessAsset=NonNullable<NonNullable<CalculationDraft['parentAssets']>['businessFarmAssets']>[number]
-const EMPTY_PROFILE:HouseholdProfileInput={studentName:'',householdName:'',dependencyStatus:'dependent',awardYear:'2026-27',familySize:null,state:'',isFictionalDemo:false,calculation:null}
 const incomeFields=[['agi','Adjusted gross income'],['deductiblePayments','Deductible IRA/KEOGH/qualified-plan payments'],['taxExemptInterest','Tax-exempt interest'],['untaxedIraDistributions','Untaxed IRA distributions'],['iraRollover','IRA rollover'],['untaxedPensions','Untaxed pensions'],['pensionRollover','Pension rollover'],['foreignIncomeExclusion','Foreign income exclusion'],['taxableGrants','Taxable grants/scholarships'],['educationCredits','Education credits'],['federalWorkStudy','Federal Work-Study'],['incomeTaxPaid','Income tax paid']] as const
 const benefits=['EITC','HOUSING_ASSISTANCE','SCHOOL_LUNCH','MEDICAID','QHP_CREDIT','SNAP','SSI','TANF','WIC'] as const
 const filingStatuses=['single','head_of_household','qualifying_surviving_spouse','married_filing_jointly','married_filing_separately','dependent_student'] as const
 
 export function HouseholdProfileForm(){
   const saved=useLiveQuery(()=>householdRepository.load())
-  const [draft,setDraft]=useState<HouseholdProfileInput>(EMPTY_PROFILE),[status,setStatus]=useState('No profile loaded.')
+  const [draft,setDraft]=useState<HouseholdProfileInput>(EMPTY_HOUSEHOLD_PROFILE),[status,setStatus]=useState('No profile loaded.')
   const setField=<K extends keyof HouseholdProfileInput>(key:K,value:HouseholdProfileInput[K])=>setDraft(current=>({...current,[key]:value,isFictionalDemo:false}))
   const setCalc=(update:(c:CalculationDraft)=>CalculationDraft)=>setDraft(current=>({...current,calculation:update(current.calculation??structuredClone(EMPTY_CALCULATION_PROFILE)),isFictionalDemo:false}))
   const loadSaved=async()=>{try{const profile=await householdRepository.load();if(!profile){setStatus('No saved profile found in this browser.');return}setDraft(profile);setStatus('Saved profile loaded from this browser.')}catch{setStatus('Saved data is unavailable or invalid. Check browser storage or restore a valid backup.')}}

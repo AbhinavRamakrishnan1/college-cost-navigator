@@ -11,7 +11,7 @@ describe('application shell', () => {
   it('renders the home entry point', () => {
     renderRoute('/')
     expect(screen.getByRole('heading', { name: /plan with context/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /try a fictional household/i })).toHaveAttribute('href', '/profile')
+    expect(screen.getByRole('link', { name: /open household profile|start with my information/i })).toHaveAttribute('href', expect.stringMatching(/^\/profile/))
   })
 
   it('opens accessible mobile navigation', async () => {

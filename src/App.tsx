@@ -7,6 +7,7 @@ const RepaymentPage=lazy(()=>import('./pages/RepaymentPage').then(module=>({defa
 const SettingsPage=lazy(()=>import('./pages/SettingsPage').then(module=>({default:module.SettingsPage})))
 const SchoolsPage=lazy(()=>import('./pages/SchoolsPage').then(module=>({default:module.SchoolsPage})))
 const ComparePage=lazy(()=>import('./pages/ComparePage').then(module=>({default:module.ComparePage})))
+const PrintSummaryPage=lazy(()=>import('./pages/PrintSummaryPage').then(module=>({default:module.PrintSummaryPage})))
 import { HomePage } from './pages/HomePage'
 import { HowItWorksPage, PrivacyPage } from './pages/InfoPages'
 const MethodologyPage=lazy(()=>import('./pages/MethodologyPages').then(module=>({default:module.MethodologyPage})))
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="app/schools" element={<StorageGate><SchoolsPage /></StorageGate>} />
         <Route path="app/compare" element={<StorageGate><ComparePage /></StorageGate>} />
         <Route path="app/repayment" element={<StorageGate><RepaymentPage /></StorageGate>} />
+        <Route path="app/summary" element={<StorageGate><PrintSummaryPage /></StorageGate>} />
         <Route path="app/settings" element={<StorageGate><SettingsPage /></StorageGate>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

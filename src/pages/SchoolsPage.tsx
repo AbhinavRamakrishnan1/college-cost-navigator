@@ -26,7 +26,7 @@ function SchoolsLoaded({scorecardSnapshot}:{scorecardSnapshot:NonNullable<Return
     <Link className="text-moss-700 underline" to="/methodology#scorecard">How are school costs and outcomes reported?</Link>
     {selected?<SchoolDetails school={selected} aid={aid} suggestedBracket={deriveHouseholdIncomeBracket(profile)}/>:null}
     <section className="card mt-6 p-6"><h2 className="font-serif text-2xl font-bold">Saved schools <span className="text-base font-normal">({saved.length}/{SAVED_SCHOOL_LIMIT})</span></h2>{saved.length===0?<p className="mt-3 text-ink-700">No schools saved on this device.</p>:<ul className="mt-4 grid gap-3">{saved.map((entry)=>{const school=scorecardSnapshot.records.find((item)=>item.unitId===entry.unitId);return school?<li key={entry.unitId} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-moss-100 p-4"><button type="button" className="font-bold text-moss-700 underline" onClick={()=>setSelectedId(school.unitId)}>{school.name}</button><button type="button" className="button-secondary" onClick={()=>toggleSaved(school)}>Remove</button></li>:<li key={entry.unitId}>School unavailable in snapshot {entry.snapshotVersion}.</li>})}</ul>}</section>
-    <NextStepActions actions={[{to:'/app/compare',label:'Compare saved schools'}]}/>
+    <NextStepActions actions={[{to:'/app/compare',label:'Compare saved schools'},{to:'/app/summary',label:'Print family summary'}]}/>
   </PageShell>
 }
 

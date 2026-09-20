@@ -37,7 +37,8 @@ test('v1.0.1 missing borrower history blocks IBR and legacy Tiered labels',async
 })
 
 test('v1.0.1 upgrades real v4 IndexedDB and keeps legacy defaults incomplete',async({page})=>{
-  await page.goto('/')
+  // Establish the production origin without booting the app/Dexie at the current version first.
+  await page.goto('/favicon.svg')
   const prior={...FICTIONAL_DEMO_PROFILE,id:'current-household',schemaVersion:2,state:'Alaska',updatedAt:'2026-09-19T00:00:00.000Z'}
   await page.evaluate(profile=>new Promise<void>((resolve,reject)=>{
     const request=indexedDB.open('college-cost-aid-navigator',40)

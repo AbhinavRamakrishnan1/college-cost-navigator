@@ -22,7 +22,7 @@ function CompareLoaded({scorecardSnapshot}:{scorecardSnapshot:NonNullable<Return
       <section className="mt-2" aria-label="Saved school comparison"><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{displayed.map((school)=><ComparisonCard key={school.unitId} school={school} bracket={bracket} intendedCip={intendedCip} remove={()=>remove(school)}/>)}</div></section>
       <div className="mt-4 rounded-lg border border-line bg-gold-100 p-5 text-sm"><p><strong>How to read this:</strong> published cost is the sticker cost. Average net prices are historical College Scorecard averages, not your guaranteed price or financial-aid offer. Institutional aid varies substantially; each school provides the actual offer.</p><p className="mt-2">Your federal SAI/Pell estimate is separate and does not include state grants, school grants, private scholarships, or other school-specific aid.</p><p className="mt-2">The debt-to-first-year-earnings ratio is a neutral comparison heuristic using Scorecard median federal debt divided by a valid Scorecard median annual earnings value one year after entry. It is not an investment pass/fail judgment or your projected debt.</p></div>
     </>}
-    <Link className="mt-5 inline-block text-moss-700 underline" to="/methodology#comparison">How is this comparison calculated?</Link><NextStepActions actions={[{to:'/app/repayment',label:'Explore repayment'}]}/>
+    <Link className="mt-5 inline-block text-moss-700 underline" to="/methodology#comparison">How is this comparison calculated?</Link><NextStepActions actions={[{to:'/app/summary',label:'Print family summary'},{to:'/app/repayment',label:'Explore repayment'}]}/>
   </PageShell>
 }
 

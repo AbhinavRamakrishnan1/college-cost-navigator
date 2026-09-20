@@ -22,6 +22,8 @@ export const EMPTY_CALCULATION_PROFILE:CalculationDraft={
   maxPellIndicator:0,assetExemption:{qualifiesForMaximumPell:false,parentAgi:0,receivedMeansTestedBenefit:false,filedSchedulesA_B_D_E_F_H:null,scheduleC:null,scheduleCNetIncome:null,parentsLiveOutsideUs:null,parentsFiledUsOrTerritoryReturn:null,nonfilingBelowFilingThreshold:null},
 }
 
+export const EMPTY_HOUSEHOLD_PROFILE:HouseholdProfileInput={studentName:'',householdName:'',dependencyStatus:'dependent',awardYear:'2026-27',familySize:null,state:'',isFictionalDemo:false,calculation:null}
+
 export const FICTIONAL_DEMO_PROFILE: HouseholdProfileInput = Object.freeze({
   studentName:'Maya Rivera',householdName:'Rivera household',dependencyStatus:'dependent',awardYear:'2026-27',familySize:4,state:'OH',isFictionalDemo:true,
   calculation:{

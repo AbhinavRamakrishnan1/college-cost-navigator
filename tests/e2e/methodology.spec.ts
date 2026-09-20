@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 
 test('methodology details and policy history are accessible and dated', async ({ page }) => {
   await page.goto('/methodology')
-  for (const id of ['sai','assets','pell','scorecard','comparison','repayment','tiered','rap','ibr','rates','projections','privacy']) {
+  for (const id of ['sai','contributors','assets','pell','scorecard','comparison','repayment','tiered','rap','ibr','rates','projections','privacy']) {
     const section = page.locator(`section#${id}`)
     await expect(section.getByRole('heading').first()).toBeVisible()
     await section.locator('summary').click()
@@ -13,7 +13,7 @@ test('methodology details and policy history are accessible and dated', async ({
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
   await page.goto('/policy-changes')
   await expect(page.getByText('Unresolved / litigated', { exact: true })).toBeVisible()
-  await expect(page.locator('ol time')).toHaveCount(10)
+  await expect(page.locator('ol time')).toHaveCount(11)
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
 })
 

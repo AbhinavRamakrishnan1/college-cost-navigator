@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { PellCalculationTrace,SaiCalculationTrace } from '../components/AidCalculationTrace'
 import { CalculationTrace,InlineDefinition,NextStepActions,PolicyVersionBadge,ResultDisclosure } from '../components/Explainability'
 import { PageShell,PlaceholderCard } from '../components/PageShell'
+import { ScenarioWorkspace } from '../components/ScenarioWorkspace'
 import { calculateProfileAid } from '../lib/calculations'
 import { householdRepository } from '../lib/storage/repositories'
 
@@ -33,7 +34,8 @@ export function AidEstimatePage(){
       {result?.status==='calculated'?<><SaiCalculationTrace result={result.sai}/><PellCalculationTrace result={result.pell}/></>:<CalculationTrace title="Show how we estimated Pell" testId="pell-trace"><p className="font-bold">{result?.status==='unsupported'?'Unsupported calculation scope':'Incomplete data'}</p><p className="mt-2 text-sm">{result?.status==='unsupported'?'No Pell path is evaluated because Formula B and Formula C are outside the current scope.':'A supported SAI and required Pell inputs are needed before the app can identify a Maximum, Calculated, Minimum, ineligible, or special-rule verification path.'}</p></CalculationTrace>}
       <ResultDisclosure><p className="font-bold">This is a federal aid estimate, not your complete financial aid package.</p><p className="mt-2">It does not include state grants, school or institutional grants, private scholarships, or other school-specific financial aid. Your state, college, or outside organizations may provide additional grants or scholarships.</p></ResultDisclosure>
       <div className="mt-5 rounded-lg border border-line bg-white p-5 text-sm"><p className="font-bold">Methodology</p><p className="mt-2">Formula A supports dependent students only. Calculations use the frozen 2026–27 contract, the 2026–27 FSA SAI and Pell Guide, and 2024 HHS poverty guidelines.</p><div className="mt-2"><InlineDefinition term="Cost of Attendance (COA)" learnMore="/methodology#pell">A school-defined budget used for aid administration. The Pell-specific COA can limit a Scheduled Award.</InlineDefinition></div></div>
-      <NextStepActions actions={[{to:'/app/schools',label:'Search colleges'},{to:'/methodology#sai',label:'Review methodology'}]}/>
+      {profile&&result?.status==='calculated'?<ScenarioWorkspace profile={profile}/>:null}
+      <NextStepActions actions={[{to:'/app/schools',label:'Search colleges'},{to:'/app/summary',label:'Print family summary'},{to:'/methodology#sai',label:'Review methodology'}]}/>
     </div>
   </PageShell>
 }

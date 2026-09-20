@@ -29,7 +29,7 @@ export function AppShell() {
             {publicLinks.map(([to, label]) => <NavLink key={to} to={to} className={navClass}>{label}</NavLink>)}
             <NavLink to="/profile" className="button-primary ml-2">Open navigator</NavLink>
           </nav>
-          <button ref={menuButton} type="button" className="rounded-md border border-line bg-white px-3 py-2 text-sm font-bold lg:hidden" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen((value) => !value)}>{open ? 'Close' : 'Menu'}</button>
+          <button ref={menuButton} type="button" className="min-h-11 rounded-md border border-line bg-white px-3 py-2 text-sm font-bold lg:hidden" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen((value) => !value)}>{open ? 'Close' : 'Menu'}</button>
         </div>
         {open ? <nav id="mobile-menu" aria-label="Mobile" className="page-wrap grid gap-1 border-t border-line py-3 lg:hidden">
           {publicLinks.map(([to, label]) => <NavLink key={to} to={to} onClick={close} className={navClass}>{label}</NavLink>)}
