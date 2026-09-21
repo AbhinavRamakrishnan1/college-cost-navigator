@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "parent-plus-origination-limits-2026-07-01.v1",
+  "effectiveFrom": "2026-07-01",
+  "effectiveTo": null,
+  "effectiveDateBasis": "period_of_enrollment_beginning_on_or_after",
+  "verifiedAsOf": "2026-09-20",
+  "scope": "parent_plus_for_dependent_undergraduate",
+  "limits": {
+    "annualPerDependentStudentDollars": 20000,
+    "aggregatePerDependentStudentDollars": 65000,
+    "sharedAcrossAllParentsForStudent": true,
+    "repaymentForgivenessCancellationOrDischargeRestoresHeadroom": false,
+    "returnedLoanFundsCountTowardAggregate": false,
+    "alsoLimitedBy": "cost_of_attendance_minus_other_financial_assistance",
+    "institutionalProgramTotalLimitRequiresCrossLoanAllocation": true
+  },
+  "transitionException": {
+    "appliesToAnnualAndAggregateCaps": true,
+    "enrolledInProgramAtInstitutionAsOf": "2026-06-30",
+    "qualifyingDirectLoanMustBeDisbursedBefore": "2026-07-01",
+    "qualifyingLoanMayHaveBeenMadeTo": ["dependent_student_for_same_program", "current_parent_borrower_for_same_program_and_student"],
+    "requiresContinuedEnrollmentInProgram": true,
+    "majorChangeWithinSameDegreeOrCertificateRemainsSameProgram": true,
+    "maximumAcademicYears": 3,
+    "durationRule": "lesser_of_three_academic_years_or_published_program_length_minus_completed_time_as_of_2026_07_01",
+    "legacyLimitWhileExceptionApplies": "cost_of_attendance_minus_other_financial_assistance"
+  },
+  "decisionStates": [
+    "eligible",
+    "credit_denied",
+    "cap_exhausted",
+    "transition_exception",
+    "insufficient_information",
+    "unsupported"
+  ],
+  "primarySources": [
+    {
+      "id": "ecfr-34-685-203",
+      "agency": "U.S. Department of Education",
+      "title": "34 CFR 685.203 - Loan limits",
+      "url": "https://www.ecfr.gov/current/title-34/subtitle-B/chapter-VI/part-685/subpart-B/section-685.203",
+      "locators": ["paragraph (f)(2)", "paragraph (g)(2)-(5)", "paragraph (j)(1)", "paragraph (m)(2)"]
+    },
+    {
+      "id": "fsa-loan-limits-faq-2026-05-20",
+      "agency": "Federal Student Aid",
+      "title": "Frequently Asked Questions - Loan Limits",
+      "url": "https://fsapartners.ed.gov/sites/default/files/2026-05/FrequentlyAskedQuestionsLoanLimits.pdf",
+      "locators": ["IE-Q1-IE-Q6", "ETC-Q1-ETC-Q27", "PPLL-Q1-PPLL-Q6"]
+    },
+    {
+      "id": "fsa-nslds-loan-limit-update-2026-04-24",
+      "agency": "Federal Student Aid",
+      "title": "One Big Beautiful Bill Act NSLDS Eligibility Processing Updates",
+      "url": "https://fsapartners.ed.gov/knowledge-center/library/electronic-announcements/2026-04-24/one-big-beautiful-bill-act-nslds-eligibility-processing-updates-updated-may-7-2026",
+      "locators": ["Parent PLUS Aggregate Loan Limit", "Lifetime Maximum Aggregate Loan Limit"]
+    }
+  ]
+}

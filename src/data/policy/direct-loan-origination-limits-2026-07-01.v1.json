@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "direct-loan-origination-limits-2026-07-01.v1",
+  "effectiveFrom": "2026-07-01",
+  "effectiveTo": null,
+  "effectiveDateBasis": "academic_year_start",
+  "verifiedAsOf": "2026-09-20",
+  "scope": "dependent_undergraduate_full_time_standard_academic_year",
+  "limits": {
+    "standardDependent": {
+      "annual": {
+        "year1": { "combinedMaxDollars": 5500, "subsidizedMaxDollars": 3500 },
+        "year2": { "combinedMaxDollars": 6500, "subsidizedMaxDollars": 4500 },
+        "year3Plus": { "combinedMaxDollars": 7500, "subsidizedMaxDollars": 5500 }
+      },
+      "aggregate": { "combinedMaxDollars": 31000, "subsidizedMaxDollars": 23000 }
+    },
+    "higherLimitDependent": {
+      "requiresExplicitQualification": true,
+      "annual": {
+        "year1": { "combinedMaxDollars": 9500, "subsidizedMaxDollars": 3500 },
+        "year2": { "combinedMaxDollars": 10500, "subsidizedMaxDollars": 4500 },
+        "year3Plus": { "combinedMaxDollars": 12500, "subsidizedMaxDollars": 5500 }
+      },
+      "aggregate": { "combinedMaxDollars": 57500, "subsidizedMaxDollars": 23000 },
+      "qualifyingDetermination": "parent_plus_credit_denial_or_documented_financial_aid_administrator_exceptional_circumstances",
+      "nonqualifyingFacts": [
+        "parent_refusal_to_borrow",
+        "parent_plus_aggregate_cap_exhaustion"
+      ]
+    },
+    "lifetimeStudentBorrowing": {
+      "maxDollars": 257500,
+      "excludesParentPlusBorrowedAsParent": true,
+      "repaymentForgivenessCancellationOrDischargeRestoresHeadroom": false,
+      "returnedLoanFundsCountTowardLimit": false,
+      "consolidationLoansDoubleCountUnderlyingLoans": false,
+      "transitionExceptionRequiresExplicitDetermination": true,
+      "transitionExceptionLimitTreatment": "not_applicable_during_verified_expected_time_to_credential"
+    }
+  },
+  "aggregateAccounting": {
+    "capitalizedInterestCountsTowardUndergraduateAggregate": false,
+    "consolidationAttributableUnderlyingPrincipalCounts": true,
+    "basis": "aggregate_countable_outstanding_principal",
+    "repaymentOfCountablePrincipalRestoresHeadroom": true,
+    "undifferentiatedServicerBalanceIsSufficient": false
+  },
+  "lifetimeAccounting": {
+    "includesDirectAndFfelStudentBorrowing": true,
+    "includesGraduatePlusBorrowedAsStudent": true,
+    "excludesParentPlusBorrowedAsParent": true,
+    "excludesHealAndSpecifiedHealthProfessionBorrowing": true,
+    "excludesConvertedTeachGrants": true,
+    "requiresCompleteCategorizedHistory": true
+  },
+  "institutionalLimitAccounting": {
+    "basis": "shared_total_across_direct_subsidized_unsubsidized_and_plus",
+    "requiresCrossLoanAllocationForUsableAmounts": true
+  },
+  "primarySources": [
+    {
+      "id": "ecfr-34-685-203",
+      "agency": "U.S. Department of Education",
+      "title": "34 CFR 685.203 - Loan limits",
+      "url": "https://www.ecfr.gov/current/title-34/subtitle-B/chapter-VI/part-685/subpart-B/section-685.203",
+      "locators": ["paragraphs (a)-(e)", "paragraphs (h)-(j)", "paragraph (m)(2)"]
+    },
+    {
+      "id": "fsa-handbook-2025-26-vol8-ch4",
+      "agency": "Federal Student Aid",
+      "title": "2025-2026 Federal Student Aid Handbook, Volume 8, Chapter 4 - Annual and Aggregate Loan Limits",
+      "url": "https://fsapartners.ed.gov/knowledge-center/fsa-handbook/2025-2026/vol8/ch4-annual-and-aggregate-loan-limits",
+      "locators": ["Annual Loan Limits for Direct Subsidized Loans and Direct Unsubsidized Loans", "Aggregate Loan Limits"]
+    },
+    {
+      "id": "fsa-loan-limits-faq-2026-05-20",
+      "agency": "Federal Student Aid",
+      "title": "Frequently Asked Questions - Loan Limits",
+      "url": "https://fsapartners.ed.gov/sites/default/files/2026-05/FrequentlyAskedQuestionsLoanLimits.pdf",
+      "locators": ["LL-Q2", "PPLL-Q4", "PPLL-Q5", "LMALL-Q1-LMALL-Q4"]
+    }
+  ]
+}

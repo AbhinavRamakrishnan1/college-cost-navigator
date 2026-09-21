@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "direct-loan-origination-fees-2026.v1",
+  "effectiveFrom": "2020-10-01",
+  "effectiveTo": "2027-09-30",
+  "effectiveDateBasis": "first_disbursement_date",
+  "verifiedAsOf": "2026-09-20",
+  "feeCalculation": {
+    "rounding": "truncate_fractional_cent",
+    "deductedProportionatelyFromEachDisbursement": true
+  },
+  "rates": {
+    "directSubsidizedOrUnsubsidized": {
+      "decimalRate": 0.01057,
+      "exactNumerator": 1057,
+      "exactDenominator": 100000
+    },
+    "directPlus": {
+      "decimalRate": 0.04228,
+      "exactNumerator": 4228,
+      "exactDenominator": 100000
+    }
+  },
+  "primarySources": [
+    {
+      "id": "fsa-general-26-28",
+      "agency": "Federal Student Aid",
+      "title": "FY27 Sequester-Required Changes to the Title IV Student Aid Programs",
+      "url": "https://fsapartners.ed.gov/knowledge-center/library/electronic-announcements/2026-05-13/fy27-sequester-required-changes-title-iv-student-aid-programs",
+      "locators": ["Direct Loan Program", "fee window and truncation examples"]
+    },
+    {
+      "id": "ecfr-34-685-202",
+      "agency": "U.S. Department of Education",
+      "title": "34 CFR 685.202 - Charges for which Direct Loan Program borrowers are responsible",
+      "url": "https://www.ecfr.gov/current/title-34/subtitle-B/chapter-VI/part-685/subpart-B/section-685.202",
+      "locators": ["paragraph (c) loan fee"]
+    }
+  ]
+}

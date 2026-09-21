@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "funding-origination-policy-foundation-v1.0",
+  "verifiedAsOf": "2026-09-20",
+  "algorithm": "sha256",
+  "normalization": "utf8_lf",
+  "files": {
+    "direct-loan-origination-limits-2026-07-01.v1.json": "1b756c30c840f29a05f7279657575036618bc06f6515dd03f2baa32509d8f383",
+    "parent-plus-origination-limits-2026-07-01.v1.json": "13f48ec1c72c69026b1614011ed0d770c66f1420908c980f024843b14bd3f6cc",
+    "direct-loan-origination-fees-2026.v1.json": "498f9902ef1312eab9d783be4392972f9d633365216d8754dbbaff91b53bf1de"
+  }
+}
