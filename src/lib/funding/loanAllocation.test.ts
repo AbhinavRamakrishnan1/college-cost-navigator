@@ -114,21 +114,21 @@ describe('fees and dated disbursement ledger', () => {
     for (const loan of result.ledger) expect(loan.grossPrincipalCents - loan.feeCents).toBe(loan.netProceedsCents)
   })
   it('uses the first-disbursement boundary and truncates each disbursement fee', () => {
-    const ledger = buildLoanLedgerEntry({ borrowerId: 'student-1', borrowerRole: 'student', studentBeneficiaryId: 'student-1', loanType: 'direct_subsidized', academicYear: '2026-27', schedule: { disbursements: [{ date: '2026-10-02', grossPrincipalCents: 101 }, { date: '2026-10-01', grossPrincipalCents: 101 }] } })
+    const ledger = buildLoanLedgerEntry({ loanId: 'loan-1', borrowerId: 'student-1', borrowerRole: 'student', studentBeneficiaryId: 'student-1', loanType: 'direct_subsidized', academicYear: '2026-27', schedule: { disbursements: [{ date: '2026-10-02', grossPrincipalCents: 101 }, { date: '2026-10-01', grossPrincipalCents: 101 }] } })
     expect(ledger).toMatchObject({ firstDisbursementDate: '2026-10-01', grossPrincipalCents: 202, feeCents: 2, netProceedsCents: 200 })
   })
   it('supports one and two explicit disbursements with reconciliation and cohort preservation', () => {
-    const one = buildLoanLedgerEntry({ borrowerId: 'student-1', borrowerRole: 'student', studentBeneficiaryId: 'student-1', loanType: 'direct_unsubsidized', academicYear: '2026-27', schedule: schedule(100_000) })
+    const one = buildLoanLedgerEntry({ loanId: 'loan-1', borrowerId: 'student-1', borrowerRole: 'student', studentBeneficiaryId: 'student-1', loanType: 'direct_unsubsidized', academicYear: '2026-27', schedule: schedule(100_000) })
     expect(one).toMatchObject({ borrowerId: 'student-1', firstDisbursementDate: '2026-08-15', rateCohort: { status: 'known' }, disbursements: [{ grossPrincipalCents: 100_000 }] })
-    const two = buildLoanLedgerEntry({ borrowerId: 'parent-a', borrowerRole: 'parent', studentBeneficiaryId: 'student-1', loanType: 'parent_plus', academicYear: '2026-27', schedule: explicitlyAssumedTwoTermSchedule({ firstDate: '2026-08-15', secondDate: '2027-01-10', grossPrincipalCents: 100_001, explanation: 'Two equal term disbursements', source: 'Planner assumption' }) })
+    const two = buildLoanLedgerEntry({ loanId: 'loan-2', borrowerId: 'parent-a', borrowerRole: 'parent', studentBeneficiaryId: 'student-1', loanType: 'parent_plus', academicYear: '2026-27', schedule: explicitlyAssumedTwoTermSchedule({ firstDate: '2026-08-15', secondDate: '2027-01-10', grossPrincipalCents: 100_001, explanation: 'Two equal term disbursements', source: 'Planner assumption' }) })
     expect(two).toMatchObject({ borrowerRole: 'parent', studentBeneficiaryId: 'student-1', loanType: 'parent_plus', grossPrincipalCents: 100_001, scheduleAssumption: { source: 'Planner assumption' } })
     if (!('status' in two)) expect(two.disbursements.reduce((sum, item) => sum + item.grossPrincipalCents, 0)).toBe(two.grossPrincipalCents)
   })
   it('requires an assumption for an unknown future fee window', () => {
-    expect(buildLoanLedgerEntry({ borrowerId: 'student-1', borrowerRole: 'student', studentBeneficiaryId: 'student-1', loanType: 'direct_unsubsidized', academicYear: '2027-28', schedule: schedule(100, '2027-10-01') })).toMatchObject({ status: 'requires_assumption' })
+    expect(buildLoanLedgerEntry({ loanId: 'loan-1', borrowerId: 'student-1', borrowerRole: 'student', studentBeneficiaryId: 'student-1', loanType: 'direct_unsubsidized', academicYear: '2027-28', schedule: schedule(100, '2027-10-01') })).toMatchObject({ status: 'requires_assumption' })
   })
   it('records no interest or accrued balance fields', () => {
-    const text = JSON.stringify(buildLoanLedgerEntry({ borrowerId: 'student-1', borrowerRole: 'student', studentBeneficiaryId: 'student-1', loanType: 'direct_unsubsidized', academicYear: '2026-27', schedule: schedule(100_000) }))
+    const text = JSON.stringify(buildLoanLedgerEntry({ loanId: 'loan-1', borrowerId: 'student-1', borrowerRole: 'student', studentBeneficiaryId: 'student-1', loanType: 'direct_unsubsidized', academicYear: '2026-27', schedule: schedule(100_000) }))
     expect(text).not.toMatch(/interest|capitaliz|graduation/i)
   })
 })

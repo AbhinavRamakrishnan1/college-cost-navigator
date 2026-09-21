@@ -47,6 +47,7 @@ export type LoanAllocationInput = {
 
 export type LedgerDisbursement = { date: string; grossPrincipalCents: number; feeCents: number; netProceedsCents: number }
 export type LoanLedgerEntry = {
+  loanId: string
   borrowerId: string
   borrowerRole: 'student' | 'parent'
   studentBeneficiaryId: string
@@ -62,6 +63,33 @@ export type LoanLedgerEntry = {
   disbursements: LedgerDisbursement[]
 }
 
+export type InterestRatePlanningValue =
+  | { status: 'known'; annualRatePercent: number; provenance: { source: string; asOf?: string } }
+  | { status: 'assumed'; annualRatePercent: number; explanation: string; provenance: { source: string; createdFor: string } }
+  | { status: 'unknown'; reason: string }
+
+export type GraduationDebtInput = {
+  ledger: LoanLedgerEntry[]
+  graduationDate: string
+  subsidyEnrollment: { status: 'qualifying_in_school'; explanation: string } | { status: 'unresolved'; reason: string } | { status: 'unsupported'; reason: string }
+  inSchoolPayments: { status: 'none_assumed'; explanation: string; source: string } | { status: 'payments_planned'; reason: string }
+  futureRateResolutions: Array<{ loanId: string; rate: InterestRatePlanningValue }>
+}
+
+export type GraduationLoanSnapshot = {
+  loanId: string
+  borrowerId: string
+  borrowerRole: 'student' | 'parent'
+  studentBeneficiaryId: string
+  loanType: LoanKind
+  principalCents: number
+  rate: InterestRatePlanningValue
+  graduationDate: string
+  status: 'complete' | 'incomplete' | 'unsupported'
+  accruedInterestCents?: number
+  informationalPrincipalPlusInterestCents?: number
+  reason?: string
+}
+
 export type AllocationFailureStatus = 'incomplete' | 'requires_assumption' | 'requires_institutional_allocation' | 'unsupported' | 'exceeds_limit'
 export type AllocationFailure = { status: AllocationFailureStatus; reasons: string[]; requested?: Record<string, number>; allowed?: Record<string, number> }
-
