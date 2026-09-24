@@ -2,10 +2,10 @@ import { useState,useRef } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 
 const publicLinks = [
-  ['/how-it-works', 'How it works'], ['/methodology', 'Methodology'], ['/policy-changes', 'Policy changes'], ['/privacy', 'Privacy'],
+  ['/how-it-works', 'How it works'], ['/methodology', 'Methodology'], ['/aid-offer-decoder', 'Aid offer decoder'], ['/policy-changes', 'Policy changes'], ['/privacy', 'Privacy'], ['/about', 'About'],
 ] as const
 const appLinks = [
-  ['/app/aid-estimate', 'Aid estimate'], ['/app/schools', 'Schools'], ['/app/compare', 'Compare'], ['/app/repayment', 'Repayment'], ['/app/settings', 'Settings'],
+  ['/app/aid-estimate', 'Aid estimate'], ['/app/schools', 'Schools'], ['/app/compare', 'Compare'], ['/app/funding-planner', 'Funding planner'], ['/app/repayment', 'Repayment'], ['/app/settings', 'Settings'],
 ] as const
 
 function Mark() {
@@ -41,7 +41,7 @@ export function AppShell() {
       <footer className="mt-20 border-t border-line bg-white py-10">
         <div className="page-wrap grid gap-6 text-sm text-ink-700 md:grid-cols-[1fr_auto]">
           <div><p className="font-bold text-ink-950">College Cost & Aid Navigator</p><p className="mt-2 max-w-xl">Planning guidance, not financial advice. Estimates will always state their policy version and assumptions.</p></div>
-          <div className="flex flex-wrap gap-x-5 gap-y-2"><Link to="/privacy">Privacy</Link><Link to="/methodology">Methodology</Link><Link to="/policy-changes">Policy changes</Link></div>
+          <div className="flex flex-wrap gap-x-5 gap-y-2"><Link to="/about">About</Link><Link to="/aid-offer-decoder">Aid offer decoder</Link><Link to="/privacy">Privacy</Link><Link to="/methodology">Methodology</Link><Link to="/policy-changes">Policy changes</Link></div>
         </div>
       </footer>
     </div>

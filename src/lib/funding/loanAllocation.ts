@@ -11,7 +11,10 @@ export function allocateFederalLoans(input: LoanAllocationInput) {
   const value = parsed.data
   const institutional = value.context.institutionalProgramLimit
   if (institutional.status === 'unknown') return failure('incomplete', 'Institutional program-limit status is unknown.')
-  if (institutional.status === 'known_total_limit' && !value.institutionalAllocation) return failure('requires_institutional_allocation', 'The known shared institutional total requires an explicit allocation among Direct Subsidized, Direct Unsubsidized, and Parent PLUS.')
+  if (institutional.status === 'known_total_limit' && !value.institutionalAllocation) {
+    const requestedInstitutionalTotal = value.directElection.subsidizedGrossCents + value.directElection.unsubsidizedGrossCents + value.parentPlusElections.reduce((sum, item) => sum + item.grossPrincipalCents, 0)
+    return failure('requires_institutional_allocation', 'The known shared institutional total requires an explicit allocation among Direct Subsidized, Direct Unsubsidized, and Parent PLUS.', { requested: { institutionalAllocationCents: requestedInstitutionalTotal }, allowed: { institutionalAnnualTotalCapCents: institutional.annualTotalCapCents } })
+  }
   if (institutional.status === 'known_total_limit' && value.institutionalAllocation) {
     const allocated = value.institutionalAllocation.directSubsidizedCents + value.institutionalAllocation.directUnsubsidizedCents + value.institutionalAllocation.parentPlusCents
     if (allocated > institutional.annualTotalCapCents) return failure('exceeds_limit', 'The supplied cross-loan allocation exceeds the known institutional annual total.', { requested: { institutionalAllocationCents: allocated }, allowed: { institutionalAnnualTotalCapCents: institutional.annualTotalCapCents } })
@@ -42,8 +45,10 @@ export function allocateFederalLoans(input: LoanAllocationInput) {
   const parentRequested = value.parentPlusElections.reduce((sum, item) => sum + item.grossPrincipalCents, 0)
   const parentAllocation = value.institutionalAllocation?.parentPlusCents ?? Number.MAX_SAFE_INTEGER
   let parentAllowed = parentAllocation
+  const parentPolicies: Array<ReturnType<typeof getParentPlusLimit>> = []
   for (const election of value.parentPlusElections) {
     const result = getParentPlusLimit({ context: federalContext, creditStatus: election.creditStatus, transitionDetermination: election.transitionDetermination, allParentsAnnualCumulativeUsageForStudentCents: value.parentPlusHistory.allParentsAnnualCumulativeUsageCents, allParentsAggregateCumulativeUsageForStudentCents: value.parentPlusHistory.allParentsAggregateCumulativeUsageCents })
+    parentPolicies.push(result)
     if (result.status === 'credit_denied') return failure('unsupported', `Parent borrower ${election.borrowerId} is not eligible for a Parent PLUS allocation because credit was denied.`)
     if (result.status === 'insufficient_information' || result.status === 'unavailable') return failure('incomplete', result.reason)
     if (result.status === 'unsupported') return failure('unsupported', result.reason)
@@ -64,5 +69,5 @@ export function allocateFederalLoans(input: LoanAllocationInput) {
   const studentNetProceedsCents = ledger.filter((item) => item.borrowerRole === 'student').reduce((sum, item) => sum + item.netProceedsCents, 0)
   const parentPlusNetProceedsCents = ledger.filter((item) => item.borrowerRole === 'parent').reduce((sum, item) => sum + item.netProceedsCents, 0)
   const signedRemainingFundingGapCents = value.preLoanGapCents - studentNetProceedsCents - parentPlusNetProceedsCents
-  return { status: 'complete' as const, policy: { directAnnual: annual, directAggregate: aggregate, directLifetime: lifetime }, elections: { directSubsidizedGrossCents: requestedSub, directUnsubsidizedGrossCents: requestedUnsub, parentPlusGrossCents: parentRequested }, ledger, accounting: { preLoanGapCents: value.preLoanGapCents, grossBorrowingCents: ledger.reduce((sum, item) => sum + item.grossPrincipalCents, 0), originationFeesCents: ledger.reduce((sum, item) => sum + item.feeCents, 0), netProceedsCents: studentNetProceedsCents + parentPlusNetProceedsCents, studentNetProceedsCents, parentPlusNetProceedsCents, signedRemainingFundingGapCents, remainingUncoveredFundingGapCents: Math.max(0, signedRemainingFundingGapCents), surplusLoanProceedsCents: Math.max(0, -signedRemainingFundingGapCents) } }
+  return { status: 'complete' as const, policy: { directAnnual: annual, directAggregate: aggregate, directLifetime: lifetime, parentPlus: parentPolicies }, elections: { directSubsidizedGrossCents: requestedSub, directUnsubsidizedGrossCents: requestedUnsub, parentPlusGrossCents: parentRequested }, ledger, accounting: { preLoanGapCents: value.preLoanGapCents, grossBorrowingCents: ledger.reduce((sum, item) => sum + item.grossPrincipalCents, 0), originationFeesCents: ledger.reduce((sum, item) => sum + item.feeCents, 0), netProceedsCents: studentNetProceedsCents + parentPlusNetProceedsCents, studentNetProceedsCents, parentPlusNetProceedsCents, signedRemainingFundingGapCents, remainingUncoveredFundingGapCents: Math.max(0, signedRemainingFundingGapCents), surplusLoanProceedsCents: Math.max(0, -signedRemainingFundingGapCents) } }
 }

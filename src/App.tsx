@@ -8,6 +8,9 @@ const SettingsPage=lazy(()=>import('./pages/SettingsPage').then(module=>({defaul
 const SchoolsPage=lazy(()=>import('./pages/SchoolsPage').then(module=>({default:module.SchoolsPage})))
 const ComparePage=lazy(()=>import('./pages/ComparePage').then(module=>({default:module.ComparePage})))
 const PrintSummaryPage=lazy(()=>import('./pages/PrintSummaryPage').then(module=>({default:module.PrintSummaryPage})))
+const FundingPlannerPage=lazy(()=>import('./pages/FundingPlannerPage').then(module=>({default:module.FundingPlannerPage})))
+const AboutPage=lazy(()=>import('./pages/AboutPage').then(module=>({default:module.AboutPage})))
+const AidOfferDecoderPage=lazy(()=>import('./pages/AidOfferDecoderPage').then(module=>({default:module.AidOfferDecoderPage})))
 import { HomePage } from './pages/HomePage'
 import { HowItWorksPage, PrivacyPage } from './pages/InfoPages'
 const MethodologyPage=lazy(()=>import('./pages/MethodologyPages').then(module=>({default:module.MethodologyPage})))
@@ -25,10 +28,13 @@ export default function App() {
         <Route path="methodology" element={<MethodologyPage />} />
         <Route path="policy-changes" element={<PolicyChangesPage />} />
         <Route path="privacy" element={<PrivacyPage />} />
+        <Route path="about" element={<AboutPage />} />
+        <Route path="aid-offer-decoder" element={<AidOfferDecoderPage />} />
         <Route path="profile" element={<StorageGate><ProfilePage /></StorageGate>} />
         <Route path="app/aid-estimate" element={<StorageGate><AidEstimatePage /></StorageGate>} />
         <Route path="app/schools" element={<StorageGate><SchoolsPage /></StorageGate>} />
         <Route path="app/compare" element={<StorageGate><ComparePage /></StorageGate>} />
+        <Route path="app/funding-planner" element={<StorageGate><FundingPlannerPage /></StorageGate>} />
         <Route path="app/repayment" element={<StorageGate><RepaymentPage /></StorageGate>} />
         <Route path="app/summary" element={<StorageGate><PrintSummaryPage /></StorageGate>} />
         <Route path="app/settings" element={<StorageGate><SettingsPage /></StorageGate>} />

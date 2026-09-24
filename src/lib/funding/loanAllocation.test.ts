@@ -76,7 +76,11 @@ describe('Parent PLUS shared caps and ownership', () => {
   it('shares caps across two parents and preserves separate ownership', () => {
     const result = allocateFederalLoans(input({ directElection: direct(0, 0), parentPlusElections: [parent('parent-a', 1_000_000), parent('parent-b', 1_000_000)] }))
     expect(result.status).toBe('complete')
-    if (result.status === 'complete') expect(result.ledger.map((loan) => loan.borrowerId)).toEqual(['parent-a', 'parent-b'])
+    if (result.status === 'complete') {
+      expect(result.ledger.map((loan) => loan.borrowerId)).toEqual(['parent-a', 'parent-b'])
+      expect(result.policy.parentPlus).toHaveLength(2)
+      expect(result.policy.parentPlus[0]).toMatchObject({ status: 'eligible', annualHeadroomCents: 2_000_000, aggregateHeadroomCents: 6_500_000 })
+    }
     expect(allocateFederalLoans(input({ directElection: direct(0, 0), parentPlusElections: [parent('parent-a', 1_000_001), parent('parent-b', 1_000_000)] })).status).toBe('exceeds_limit')
   })
   it('does not restore cumulative cap after repayment', () => {
@@ -96,7 +100,7 @@ describe('institutional allocation contract', () => {
     expect(allocateFederalLoans(input({ context: { ...input().context, institutionalProgramLimit: { status: 'unknown' } } })).status).toBe('incomplete')
   })
   it('requires an explicit allocation for a known shared total', () => {
-    expect(allocateFederalLoans(input({ context: limitedContext }))).toMatchObject({ status: 'requires_institutional_allocation' })
+    expect(allocateFederalLoans(input({ context: limitedContext, directElection: direct(200_000, 100_000), parentPlusElections: [parent('parent-a', 150_000)] }))).toMatchObject({ status: 'requires_institutional_allocation', requested: { institutionalAllocationCents: 450_000 }, allowed: { institutionalAnnualTotalCapCents: 1_000_000 } })
   })
   it('accepts a valid allocation and rejects allocations above the total', () => {
     expect(allocateFederalLoans(input({ context: limitedContext, institutionalAllocation: { directSubsidizedCents: 350_000, directUnsubsidizedCents: 200_000, parentPlusCents: 450_000, source: 'School allocation notice' } })).status).toBe('complete')

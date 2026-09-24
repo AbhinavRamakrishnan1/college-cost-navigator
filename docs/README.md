@@ -31,3 +31,12 @@ same-origin static data. See `production-operations.md` for regeneration, verifi
 deployment instructions, and the manual accessibility checklist. The only federal
 calculation changes are the explicitly approved RAP final-boundary rounding and
 projected-outstanding-debt proration corrections; policy JSON remains untouched.
+
+## v1.1 product release
+
+The v1.1 release adds explainability, guided setup, the ephemeral four-/five-year
+funding planner, plan completeness, a Decision Season Checklist, funding timeline,
+source badges, a bounded baseline-versus-what-if view, the Aid Offer Decoder, an
+About page, and a safety-first link into existing repayment scenarios. Funding and
+what-if state are not persisted. See `v1.1-release-report.md` and the Phase 1–3
+reports for scope and verification evidence.

@@ -33,6 +33,7 @@
   .button-primary { display: inline-flex; align-items: center; justify-content: center; border-radius: .65rem; background: var(--color-moss-700); padding: .8rem 1.15rem; color: white; font-weight: 750; text-decoration: none; transition: background .2s, transform .2s; }
   .button-primary:hover { background: var(--color-moss-600); transform: translateY(-1px); }
   .button-secondary { display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--color-line); border-radius: .65rem; background: white; padding: .8rem 1.15rem; color: var(--color-ink-950); font-weight: 700; text-decoration: none; }
+  .planner-active, .planner-active:hover { background-color: #142521 !important; color: white !important; }
   .card { border: 1px solid var(--color-line); border-radius: 1rem; background: var(--color-surface); box-shadow: var(--shadow-soft); }
   .inline-definition { position: relative; display: inline-block; vertical-align: baseline; }
   .inline-definition > summary { display: inline-flex; min-height: 2.75rem; cursor: pointer; list-style: none; align-items: center; gap: .35rem; border-bottom: 1px dashed var(--color-moss-700); color: var(--color-moss-700); font-weight: 750; }
