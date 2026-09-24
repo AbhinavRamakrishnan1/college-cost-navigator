@@ -10,6 +10,7 @@ const ComparePage=lazy(()=>import('./pages/ComparePage').then(module=>({default:
 const PrintSummaryPage=lazy(()=>import('./pages/PrintSummaryPage').then(module=>({default:module.PrintSummaryPage})))
 const FundingPlannerPage=lazy(()=>import('./pages/FundingPlannerPage').then(module=>({default:module.FundingPlannerPage})))
 const AboutPage=lazy(()=>import('./pages/AboutPage').then(module=>({default:module.AboutPage})))
+const ContactPage=lazy(()=>import('./pages/ContactPage').then(module=>({default:module.ContactPage})))
 const AidOfferDecoderPage=lazy(()=>import('./pages/AidOfferDecoderPage').then(module=>({default:module.AidOfferDecoderPage})))
 import { HomePage } from './pages/HomePage'
 import { HowItWorksPage, PrivacyPage } from './pages/InfoPages'
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="policy-changes" element={<PolicyChangesPage />} />
         <Route path="privacy" element={<PrivacyPage />} />
         <Route path="about" element={<AboutPage />} />
+        <Route path="contact" element={<ContactPage />} />
         <Route path="aid-offer-decoder" element={<AidOfferDecoderPage />} />
         <Route path="profile" element={<StorageGate><ProfilePage /></StorageGate>} />
         <Route path="app/aid-estimate" element={<StorageGate><AidEstimatePage /></StorageGate>} />
