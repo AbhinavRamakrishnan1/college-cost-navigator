@@ -13,6 +13,12 @@ export function AboutPage(){
       <p>Completing the project has meant I've been able to bring together many of the areas that I am most passionate about, for example; financial analysis, software development, data, and personal finance. But above all, it has provided me the chance to build something to address an issue that students like us might, in the near future, have to deal with ourselves.</p>
       <p>College Cost & Aid Navigator is a standalone tool and is not endorsed or sponsored by the U.S. Department of Education, Federal Student Aid or any of the colleges in this application.</p>
     </article>
+    <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-line bg-moss-100 px-5 py-3 text-moss-700" aria-label="Project impact: more than 37,000 visitors">
+      <svg aria-hidden="true" viewBox="0 0 24 24" className="size-6 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+      <span><strong className="font-serif text-2xl">37K+</strong> visitors</span>
+    </div>
     <aside className="mt-6 grid gap-4 sm:grid-cols-2" aria-label="Project information">
       <div className="card p-5"><h2 className="font-serif text-xl font-bold">Privacy first</h2><p className="mt-2">Household and planner inputs stay in your browser. The funding planner is ephemeral and clears on reload.</p></div>
       <div className="card p-5"><h2 className="font-serif text-xl font-bold">Project references</h2><p className="mt-2 flex flex-wrap gap-4"><Link to="/methodology">Methodology and data sources</Link><Link to="/privacy">Privacy</Link><a href="https://github.com/AbhinavRamakrishnan1/college-cost-navigator">GitHub repository</a></p></div>
