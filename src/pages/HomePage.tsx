@@ -3,6 +3,13 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Link } from 'react-router-dom'
 import { householdRepository } from '../lib/storage/repositories'
 
+const testimonials = [
+  { name:'Priya S.', location:'Edison, NJ', quote:'It gave our household a more realistic picture of what the cost of college would be. Seeing the breakdown of the possible costs down the road was helpful.' },
+  { name:'Varun P.', location:'Jersey City, NJ', quote:'Seeing the entire college cost in one place made it so much easier for our family to compare schools. It also helped us see past tuition when talking through our options.' },
+  { name:'Thaman S.', location:'Monroe Township, NJ', quote:'As a parent I want to tell my kid to go to whichever school he wants to, but the issue of cost truly affects me. Abhinav recently shared this with me and it made it so so much easier for me to understand the actual cost of college, and I was finally able to talk to my son about which colleges he can apply to with me being able to cover his tuition.' },
+  { name:'David S.', location:'Boston, MA', quote:"I've guided Abhinav throughout his internship and has been a great experience, for him as well as for me. After meeting him in Boston, he presented College Cost Navigator to us, and I had to say, I was really excited about what he has come up with. Not only does he show off his computer skills, but the tool himself solves a very real problem for families planning college. It's great to see someone who takes an idea and makes it happen." },
+] as const
+
 export function HomePage() {
   const profile=useLiveQuery(()=>householdRepository.load(),[],null),[dismissed,setDismissed]=useState(false)
   return <>
@@ -11,5 +18,13 @@ export function HomePage() {
       <aside className="card overflow-hidden" aria-label="Planning preview"><div className="bg-moss-700 p-6 text-white"><p className="text-xs font-bold uppercase tracking-widest text-moss-100">Sample planning view</p><p className="mt-3 font-serif text-3xl">The Rivera household</p><p className="mt-2 text-sm text-moss-100">Fictional data · dependent student</p></div><div className="grid gap-4 p-6"><div className="rounded-lg bg-gold-100 p-4"><p className="text-sm font-bold">Policy-aware by design</p><p className="mt-1 text-sm leading-6 text-ink-700">Estimates use the frozen policy baseline verified August 7, 2026.</p></div><div className="grid grid-cols-2 gap-3 text-sm"><div className="rounded-lg border border-line p-4"><span className="text-ink-500">Schools</span><strong className="mt-2 block text-2xl">—</strong></div><div className="rounded-lg border border-line p-4"><span className="text-ink-500">Aid estimate</span><strong className="mt-2 block text-2xl">Not run</strong></div></div></div></aside>
     </section>
     <section className="border-y border-line bg-white py-14"><div className="page-wrap grid gap-6 md:grid-cols-3">{[['Private by default','Your household profile stays in this browser and can be deleted at any time.'],['Transparent assumptions','Policy years, sources, and unsupported scenarios are shown instead of hidden.'],['Built for comparison','Keep the full cost picture visible as you consider schools and borrowing.']].map(([title, text], index) => <article key={title} className="p-2"><span className="font-serif text-3xl text-gold-500">0{index + 1}</span><h2 className="mt-4 text-lg font-extrabold">{title}</h2><p className="mt-2 leading-7 text-ink-700">{text}</p></article>)}</div></section>
+    <section className="page-wrap py-16 sm:py-20" aria-labelledby="testimonials-heading">
+      <p className="eyebrow">Community feedback</p>
+      <h2 id="testimonials-heading" className="mt-4 font-serif text-3xl font-bold sm:text-4xl">What families and mentors are saying</h2>
+      <div className="mt-8 grid gap-5 md:grid-cols-2">
+        {testimonials.map(testimonial=><figure key={testimonial.name} className="card flex h-full flex-col p-6 sm:p-7"><blockquote className="flex-1 text-lg leading-8 text-ink-700"><p>“{testimonial.quote}”</p></blockquote><figcaption className="mt-5 border-t border-line pt-4"><strong className="text-ink-950">{testimonial.name}</strong><span className="ml-2 text-sm text-ink-500">{testimonial.location}</span></figcaption></figure>)}
+      </div>
+      <aside className="mt-8 rounded-xl bg-moss-700 p-6 text-white sm:flex sm:items-center sm:justify-between sm:gap-8" aria-labelledby="share-experience-heading"><div><h3 id="share-experience-heading" className="font-serif text-2xl font-bold">Used the Navigator?</h3><p className="mt-2 max-w-2xl leading-7 text-moss-100">Feel free to share your experience. Please leave out private financial details or identifying information about students.</p></div><Link to="/contact" className="button-secondary mt-5 inline-flex shrink-0 bg-white text-ink-950 sm:mt-0">Share your experience</Link></aside>
+    </section>
   </>
 }

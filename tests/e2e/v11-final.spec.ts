@@ -6,6 +6,12 @@ test('homepage presents the project reach clearly and accessibly',async({page})=
   const reach=page.getByLabel('Project reach: more than 37,000 visitors')
   await expect(reach).toBeVisible()
   await expect(reach).toContainText('37K+ visitors')
+  const feedback=page.getByRole('region',{name:'What families and mentors are saying'})
+  await expect(feedback.getByText('Priya S.')).toBeVisible()
+  await expect(feedback.getByText('Varun P.')).toBeVisible()
+  await expect(feedback.getByText('Thaman S.')).toBeVisible()
+  await expect(feedback.getByText('David S.')).toBeVisible()
+  await expect(feedback.getByRole('link',{name:'Share your experience'})).toHaveAttribute('href','/contact')
   expect((await new AxeBuilder({page}).analyze()).violations).toEqual([])
 })
 
