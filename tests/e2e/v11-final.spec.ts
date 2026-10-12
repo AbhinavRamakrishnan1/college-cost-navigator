@@ -1,6 +1,14 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect,test } from '@playwright/test'
 
+test('homepage presents the project reach clearly and accessibly',async({page})=>{
+  await page.goto('/')
+  const reach=page.getByLabel('Project reach: more than 37,000 visitors')
+  await expect(reach).toBeVisible()
+  await expect(reach).toContainText('37K+ visitors')
+  expect((await new AxeBuilder({page}).analyze()).violations).toEqual([])
+})
+
 test('About and Aid Offer Decoder are navigable and accessible',async({page})=>{
   await page.goto('/about')
   await expect(page.getByRole('heading',{name:'About the Builder'})).toBeVisible()
